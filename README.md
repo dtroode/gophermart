@@ -1,25 +1,16 @@
 # go-musthave-diploma-tpl
 
-Шаблон репозитория для индивидуального дипломного проекта курса «Go-разработчик»
-
-# Начало работы
-
-1. Склонируйте репозиторий в любую подходящую директорию на вашем компьютере.
-2. В корне репозитория выполните команду `go mod init <name>` (где `<name>` — адрес вашего репозитория на GitHub без
-   префикса `https://`) для создания модуля
-
-# Обновление шаблона
-
-Чтобы иметь возможность получать обновления автотестов и других частей шаблона, выполните команду:
-
+## генерация sqlc
 ```
-git remote add -m master template https://github.com/yandex-praktikum/go-musthave-diploma-tpl.git
+go tool sqlc generate
 ```
 
-Для обновления кода автотестов выполните команду:
-
+## генерация swagger
 ```
-git fetch template && git checkout template/master .github
+go tool swag init -g cmd/gophermart/main.go -d .,./internal/application,./internal/api/http
 ```
 
-Затем добавьте полученные изменения в свой репозиторий.
+## генерация моков
+```
+docker run -v "$PWD":/src -w /src vektra/mockery --all
+```

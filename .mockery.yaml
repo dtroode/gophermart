@@ -1,0 +1,21 @@
+quiet: False
+resolve-type-alias: False
+issue-845-fix: True
+with-expecter: true
+dir: "{{.InterfaceDir}}/mocks"
+outpkg: "mocks"
+mockname: "{{.InterfaceName}}"
+filename: "{{.MockName}}.go"
+packages:
+    github.com/dtroode/gophermart/internal/api/http/handler:
+        interfaces:
+            Service:
+    github.com/dtroode/gophermart/internal/application/service:
+        interfaces:
+            Hasher:
+            TokenManager:
+            AccrualAdapter:
+            WorkerPool:
+    github.com/dtroode/gophermart/internal/application/storage:
+        interfaces:
+            Storage:

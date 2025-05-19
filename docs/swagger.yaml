@@ -1,0 +1,338 @@
+basePath: /api
+definitions:
+  github_com_dtroode_gophermart_internal_api_http_request.Login:
+    properties:
+      login:
+        description: |-
+          User login
+          Required: true
+        type: string
+      password:
+        description: |-
+          User password
+          Required: true
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  github_com_dtroode_gophermart_internal_api_http_request.RegisterUser:
+    properties:
+      login:
+        description: |-
+          User login
+          Required: true
+        type: string
+      password:
+        description: |-
+          User password
+          Required: true
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  github_com_dtroode_gophermart_internal_api_http_request.WithdrawBonuses:
+    properties:
+      order:
+        description: |-
+          Order number for withdrawal
+          Required: true
+        type: string
+      sum:
+        description: |-
+          Amount to withdraw
+          Required: true
+        minimum: 0
+        type: number
+    required:
+    - order
+    - sum
+    type: object
+  github_com_dtroode_gophermart_internal_application_response.UserBalance:
+    properties:
+      current:
+        type: number
+      withdrawn:
+        type: integer
+    type: object
+  github_com_dtroode_gophermart_internal_application_response.UserOrder:
+    properties:
+      accrual:
+        type: integer
+      number:
+        type: string
+      status:
+        type: string
+      uploaded_at:
+        type: string
+    type: object
+  github_com_dtroode_gophermart_internal_application_response.UserWithdrawal:
+    properties:
+      order:
+        type: string
+      processed_at:
+        type: string
+      sum:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+  description: A loyalty points service for an online marketplace where users can
+    register orders and receive bonuses.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: GopherMart API
+  version: "1.0"
+paths:
+  /user/balance:
+    get:
+      description: Get current balance for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_dtroode_gophermart_internal_application_response.UserBalance'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Get user balance
+      tags:
+      - balance
+  /user/balance/withdraw:
+    post:
+      consumes:
+      - application/json
+      description: Withdraw bonuses for the authenticated user
+      parameters:
+      - description: Withdrawal details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_dtroode_gophermart_internal_api_http_request.WithdrawBonuses'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Withdrawal successful
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "402":
+          description: Not enough bonuses
+          schema:
+            type: string
+        "422":
+          description: Invalid order number
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Withdraw user bonuses
+      tags:
+      - balance
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate existing user
+      parameters:
+      - description: User login credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_dtroode_gophermart_internal_api_http_request.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bearer token in Authorization header
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Login user
+      tags:
+      - auth
+  /user/orders:
+    get:
+      description: Get all orders for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_dtroode_gophermart_internal_application_response.UserOrder'
+            type: array
+        "204":
+          description: No orders found
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: List user orders
+      tags:
+      - orders
+    post:
+      consumes:
+      - text/plain
+      description: Upload a new order for the authenticated user
+      parameters:
+      - description: Order number
+        in: body
+        name: order
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order already exists
+          schema:
+            type: string
+        "202":
+          description: Order accepted
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "409":
+          description: Order registered by another user
+          schema:
+            type: string
+        "422":
+          description: Invalid order number
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: Upload order
+      tags:
+      - orders
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user in the system
+      parameters:
+      - description: User registration details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_dtroode_gophermart_internal_api_http_request.RegisterUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Bearer token in Authorization header
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "409":
+          description: User already exists
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Register new user
+      tags:
+      - auth
+  /user/withdrawals:
+    get:
+      description: Get all withdrawals for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_dtroode_gophermart_internal_application_response.UserWithdrawal'
+            type: array
+        "204":
+          description: No withdrawals found
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: List user withdrawals
+      tags:
+      - balance
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
