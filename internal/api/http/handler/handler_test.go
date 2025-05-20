@@ -99,6 +99,7 @@ func TestHandler_RegisterUser(t *testing.T) {
 			h := handler.New(tt.serviceMock, dummyLogger)
 
 			h.RegisterUser(w, r)
+			defer w.Result().Body.Close()
 
 			require.Equal(t, tt.expectedStatusCode, w.Code)
 			if !tt.wantError {
@@ -176,6 +177,7 @@ func TestHandler_Login(t *testing.T) {
 			h := handler.New(tt.serviceMock, dummyLogger)
 
 			h.Login(w, r)
+			defer w.Result().Body.Close()
 
 			require.Equal(t, tt.expectedStatusCode, w.Code)
 			if !tt.wantError {
@@ -285,6 +287,7 @@ func TestHandler_UploadOrder(t *testing.T) {
 			h := handler.New(tt.serviceMock, dummyLogger)
 
 			h.UploadOrder(w, r)
+			defer w.Result().Body.Close()
 
 			assert.Equal(t, tt.expectedStatusCode, w.Code)
 		})
@@ -549,6 +552,7 @@ func TestHandler_WithdrawUserBonuses(t *testing.T) {
 			h := handler.New(tt.serviceMock, dummyLogger)
 
 			h.WithdrawUserBonuses(w, r)
+			defer w.Result().Body.Close()
 
 			assert.Equal(t, tt.expectedStatusCode, w.Code)
 		})
