@@ -21,8 +21,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+type testNameKey string
+
+const tnk testNameKey = "test"
+
 func TestService_RegisterUser(t *testing.T) {
-	ctx := context.WithValue(context.Background(), "test", "RegisterUser")
+	ctx := context.WithValue(context.Background(), tnk, "RegisterUser")
 
 	params := &request.RegisterUser{
 		Login:    "test-login",
@@ -144,7 +148,7 @@ func TestService_RegisterUser(t *testing.T) {
 }
 
 func TestService_Login(t *testing.T) {
-	ctx := context.WithValue(context.Background(), "test", "Login")
+	ctx := context.WithValue(context.Background(), tnk, "Login")
 
 	params := &request.Login{
 		Login:    "test-login",
@@ -262,7 +266,7 @@ func TestService_Login(t *testing.T) {
 }
 
 func TestService_UploadOrder(t *testing.T) {
-	ctx := context.WithValue(context.Background(), "test", "UploadOrder")
+	ctx := context.WithValue(context.Background(), tnk, "UploadOrder")
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -371,7 +375,7 @@ func TestService_UploadOrder(t *testing.T) {
 }
 
 func TestService_ListUserOrders(t *testing.T) {
-	ctx := context.WithValue(context.Background(), "test", "ListUserOrders")
+	ctx := context.WithValue(context.Background(), tnk, "ListUserOrders")
 
 	userID := uuid.New()
 
@@ -450,7 +454,7 @@ func TestService_ListUserOrders(t *testing.T) {
 }
 
 func TestService_GetUserBalance(t *testing.T) {
-	ctx := context.WithValue(context.Background(), "test", "GetUserBalance")
+	ctx := context.WithValue(context.Background(), tnk, "GetUserBalance")
 
 	userID := uuid.New()
 
@@ -521,7 +525,7 @@ func TestService_GetUserBalance(t *testing.T) {
 }
 
 func TestService_WithdrawUserBonuses(t *testing.T) {
-	ctx := context.WithValue(context.Background(), "test", "WithdrawUserBonuses")
+	ctx := context.WithValue(context.Background(), tnk, "WithdrawUserBonuses")
 
 	params := &request.WithdrawBonuses{
 		UserID: uuid.New(),
@@ -615,7 +619,7 @@ func TestService_WithdrawUserBonuses(t *testing.T) {
 }
 
 func TestService_ListUserWithdrawals(t *testing.T) {
-	ctx := context.WithValue(context.Background(), "test", "ListUserWithdrawals")
+	ctx := context.WithValue(context.Background(), tnk, "ListUserWithdrawals")
 
 	userID := uuid.New()
 
