@@ -10,6 +10,9 @@ packages:
     github.com/dtroode/gophermart/internal/api/http/handler:
         interfaces:
             Service:
+    github.com/dtroode/gophermart/internal/api/http/middleware:
+        interfaces:
+            TokenManager:
     github.com/dtroode/gophermart/internal/application/service:
         interfaces:
             Hasher:

@@ -10,20 +10,19 @@ import (
 	"github.com/google/uuid"
 )
 
-type Token interface {
+type TokenManager interface {
 	GetUserID(ctx context.Context, tokenString string) (uuid.UUID, error)
-	CreateToken(ctx context.Context, userID uuid.UUID) (string, error)
 }
 
 type Authenticate struct {
-	token  Token
-	logger *logger.Logger
+	tokenManager TokenManager
+	logger       *logger.Logger
 }
 
-func NewAuthenticate(token Token, l *logger.Logger) *Authenticate {
+func NewAuthenticate(tokenManager TokenManager, l *logger.Logger) *Authenticate {
 	return &Authenticate{
-		token:  token,
-		logger: l,
+		tokenManager: tokenManager,
+		logger:       l,
 	}
 }
 
@@ -33,14 +32,12 @@ func (m *Authenticate) Handle(next http.Handler) http.Handler {
 
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
-			m.logger.Info("[AUTH] auth header is empty")
 			w.WriteHeader(http.StatusUnauthorized)
 
 			return
 		}
 
 		if !strings.HasPrefix(authHeader, "Bearer ") {
-			m.logger.Info("[AUTH] token doesn't start with Bearer")
 			w.WriteHeader(http.StatusUnauthorized)
 
 			return
@@ -48,16 +45,14 @@ func (m *Authenticate) Handle(next http.Handler) http.Handler {
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-		userID, err := m.token.GetUserID(ctx, tokenString)
+		userID, err := m.tokenManager.GetUserID(ctx, tokenString)
 		if err != nil {
-			m.logger.Info("[AUTH] failed to get user id", "error", err)
 			w.WriteHeader(http.StatusUnauthorized)
 
 			return
 		}
 
 		if userID == uuid.Nil {
-			m.logger.Info("[AUTH] user id is nil")
 			w.WriteHeader(http.StatusUnauthorized)
 
 			return

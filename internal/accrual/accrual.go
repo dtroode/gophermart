@@ -23,7 +23,6 @@ func NewAdapter(endpoint string) *Adapter {
 
 func (a *Adapter) GetOrder(ctx context.Context, orderNumber string) (*model.AccrualOrder, error) {
 	u, err := url.JoinPath(a.endpoint, "/api/orders/", orderNumber)
-	fmt.Printf("[ACCRUAL] path: %s\n", u)
 	if err != nil {
 		return nil, fmt.Errorf("failed to join path: %w", err)
 	}

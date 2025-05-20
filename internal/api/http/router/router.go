@@ -20,7 +20,7 @@ func NewRouter() *Router {
 	}
 }
 
-func (r *Router) RegisterRoutes(s *service.Service, token middleware.Token, l *logger.Logger) {
+func (r *Router) RegisterRoutes(s *service.Service, token middleware.TokenManager, l *logger.Logger) {
 	loggerMiddleware := middleware.NewRequestLog(l).Handle
 	authenticate := middleware.NewAuthenticate(token, l).Handle
 	degzipper := middleware.Decompress
@@ -50,4 +50,4 @@ func (r *Router) RegisterRoutes(s *service.Service, token middleware.Token, l *l
 			r.Get("/withdrawals", h.ListUserWithdrawals)
 		})
 	})
-} 
+}

@@ -228,23 +228,6 @@ func (s *Service) WithdrawUserBonuses(ctx context.Context, params *request.Withd
 		return application.ErrUnprocessable
 	}
 
-	// INSERT_YOUR_CODE
-	// Round the sum to the nearest integer (up or down as needed)
-	// If you want to always round down: use math.Floor
-	// If you want to always round up: use math.Ceil
-	// If you want to round to the nearest integer: use math.Round
-
-	// Example: round to nearest integer
-	// params.Sum = float32(int(params.Sum + 0.5))
-
-	// If you want to always round down, use:
-	// params.Sum = float32(int(params.Sum))
-
-	// If you want to always round up, use:
-	// if float32(int(params.Sum)) < params.Sum {
-	//     params.Sum = float32(int(params.Sum) + 1)
-	// }
-
 	_, err := s.storage.WithdrawUserBonuses(ctx, &storage.WithdrawUserBonuses{
 		UserID:   params.UserID,
 		OrderNum: params.OrderNumber,
