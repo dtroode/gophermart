@@ -401,10 +401,6 @@ const docTemplate = `{
     "definitions": {
         "github_com_dtroode_gophermart_internal_api_http_request.Login": {
             "type": "object",
-            "required": [
-                "login",
-                "password"
-            ],
             "properties": {
                 "login": {
                     "description": "User login\nRequired: true",
@@ -418,10 +414,6 @@ const docTemplate = `{
         },
         "github_com_dtroode_gophermart_internal_api_http_request.RegisterUser": {
             "type": "object",
-            "required": [
-                "login",
-                "password"
-            ],
             "properties": {
                 "login": {
                     "description": "User login\nRequired: true",
@@ -435,10 +427,6 @@ const docTemplate = `{
         },
         "github_com_dtroode_gophermart_internal_api_http_request.WithdrawBonuses": {
             "type": "object",
-            "required": [
-                "order",
-                "sum"
-            ],
             "properties": {
                 "order": {
                     "description": "Order number for withdrawal\nRequired: true",
@@ -446,8 +434,7 @@ const docTemplate = `{
                 },
                 "sum": {
                     "description": "Amount to withdraw\nRequired: true",
-                    "type": "number",
-                    "minimum": 0
+                    "type": "number"
                 }
             }
         },
@@ -458,7 +445,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "withdrawn": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -466,7 +453,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "accrual": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "number": {
                     "type": "string"
@@ -489,7 +476,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sum": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         }
