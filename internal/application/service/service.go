@@ -172,7 +172,7 @@ func (s *Service) UploadOrder(ctx context.Context, params *request.UploadOrder) 
 		return nil, fmt.Errorf("failed to save order: %w", err)
 	}
 
-	s.pool.Submit(context.Background(), 1*time.Hour, s.checkOrderJob(order.ID, order.Number), false)
+	s.pool.Submit(context.Background(), 1*time.Hour, s.checkOrderJob(order.ID, order.Number, 1*time.Second), false)
 
 	return order, nil
 }

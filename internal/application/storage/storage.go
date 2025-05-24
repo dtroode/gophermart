@@ -33,9 +33,9 @@ type SetOrderStatus struct {
 }
 
 type SetOrderStatusAndAccrual struct {
-	OrderID     uuid.UUID
-	OrderStatus model.OrderStatus
-	Accrual     float32
+	ID      uuid.UUID
+	Status  model.OrderStatus
+	Accrual float32
 }
 
 type SetUserBalance struct {

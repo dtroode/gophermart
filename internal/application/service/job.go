@@ -12,9 +12,9 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *Service) checkOrderJob(orderID uuid.UUID, orderNumber string) func(ctx context.Context) (any, error) {
+func (s *Service) checkOrderJob(orderID uuid.UUID, orderNumber string, duration time.Duration) func(ctx context.Context) (any, error) {
 	return func(ctx context.Context) (any, error) {
-		c := time.Tick(1 * time.Second)
+		c := time.Tick(duration)
 		currentStatus := model.AccrualOrderStatusRegistered
 		for {
 			select {
@@ -62,9 +62,9 @@ func (s *Service) checkOrderJob(orderID uuid.UUID, orderNumber string) func(ctx 
 
 				if order.Status == model.AccrualOrderStatusProcessed {
 					params := &storage.SetOrderStatusAndAccrual{
-						OrderID:     orderID,
-						OrderStatus: model.OrderStatusProcessed,
-						Accrual:     order.Accrual,
+						ID:      orderID,
+						Status:  model.OrderStatusProcessed,
+						Accrual: order.Accrual,
 					}
 					updatedOrder, err := s.storage.SetOrderStatusAndAccrual(ctx, params)
 					if err != nil {

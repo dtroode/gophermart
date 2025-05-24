@@ -300,8 +300,8 @@ func (s *Storage) SetOrderStatusAndAccrual(ctx context.Context, dto *storage.Set
 	qtx := s.queries.WithTx(tx)
 
 	statusParams := SetOrderStatusParams{
-		Status: OrderStatus(dto.OrderStatus),
-		ID:     pgtype.UUID{Bytes: dto.OrderID, Valid: true},
+		Status: OrderStatus(dto.Status),
+		ID:     pgtype.UUID{Bytes: dto.ID, Valid: true},
 	}
 	_, err = qtx.SetOrderStatus(ctx, statusParams)
 	if err != nil {
@@ -310,7 +310,7 @@ func (s *Storage) SetOrderStatusAndAccrual(ctx context.Context, dto *storage.Set
 
 	accrualParams := SetOrderAccrualParams{
 		Accrual: pgtype.Float4{Float32: dto.Accrual, Valid: true},
-		ID:      pgtype.UUID{Bytes: dto.OrderID, Valid: true},
+		ID:      pgtype.UUID{Bytes: dto.ID, Valid: true},
 	}
 	dbOrder, err := qtx.SetOrderAccrual(ctx, accrualParams)
 	if err != nil {

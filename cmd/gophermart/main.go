@@ -86,4 +86,5 @@ func main() {
 
 	<-sigChan
 	log.Info("received interruption signal, exitting")
+	pool.Stop()
 }
