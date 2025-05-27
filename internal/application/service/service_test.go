@@ -98,7 +98,7 @@ func TestService_RegisterUser(t *testing.T) {
 			}(),
 			tokenManagerMock: func() *mocks.TokenManager {
 				mock := mocks.NewTokenManager(t)
-				mock.On("CreateToken", ctx, uuid.Max).Once().Return("", errors.New("token manager error"))
+				mock.On("CreateToken", uuid.Max).Once().Return("", errors.New("token manager error"))
 				return mock
 			}(),
 			expectedErr: fmt.Errorf("failed to create token: %w", errors.New("token manager error")),
@@ -117,7 +117,7 @@ func TestService_RegisterUser(t *testing.T) {
 			}(),
 			tokenManagerMock: func() *mocks.TokenManager {
 				mock := mocks.NewTokenManager(t)
-				mock.On("CreateToken", ctx, uuid.Max).Once().Return("token", nil)
+				mock.On("CreateToken", uuid.Max).Once().Return("token", nil)
 				return mock
 			}(),
 			expectedResp: "token",
@@ -217,7 +217,7 @@ func TestService_Login(t *testing.T) {
 			}(),
 			tokenManagerMock: func() *mocks.TokenManager {
 				mock := mocks.NewTokenManager(t)
-				mock.On("CreateToken", ctx, uuid.Max).Once().Return("", errors.New("token manager error"))
+				mock.On("CreateToken", uuid.Max).Once().Return("", errors.New("token manager error"))
 				return mock
 			}(),
 			expectedErr: fmt.Errorf("failed to create token: %w", errors.New("token manager error")),
@@ -235,7 +235,7 @@ func TestService_Login(t *testing.T) {
 			}(),
 			tokenManagerMock: func() *mocks.TokenManager {
 				mock := mocks.NewTokenManager(t)
-				mock.On("CreateToken", ctx, uuid.Max).Once().Return("token", nil)
+				mock.On("CreateToken", uuid.Max).Once().Return("token", nil)
 				return mock
 			}(),
 			expectedResp: "token",

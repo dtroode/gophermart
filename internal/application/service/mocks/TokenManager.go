@@ -3,8 +3,6 @@
 package mocks
 
 import (
-	context "context"
-
 	mock "github.com/stretchr/testify/mock"
 
 	uuid "github.com/google/uuid"
@@ -23,9 +21,9 @@ func (_m *TokenManager) EXPECT() *TokenManager_Expecter {
 	return &TokenManager_Expecter{mock: &_m.Mock}
 }
 
-// CreateToken provides a mock function with given fields: ctx, userID
-func (_m *TokenManager) CreateToken(ctx context.Context, userID uuid.UUID) (string, error) {
-	ret := _m.Called(ctx, userID)
+// CreateToken provides a mock function with given fields: userID
+func (_m *TokenManager) CreateToken(userID uuid.UUID) (string, error) {
+	ret := _m.Called(userID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateToken")
@@ -33,17 +31,17 @@ func (_m *TokenManager) CreateToken(ctx context.Context, userID uuid.UUID) (stri
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) (string, error)); ok {
-		return rf(ctx, userID)
+	if rf, ok := ret.Get(0).(func(uuid.UUID) (string, error)); ok {
+		return rf(userID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, uuid.UUID) string); ok {
-		r0 = rf(ctx, userID)
+	if rf, ok := ret.Get(0).(func(uuid.UUID) string); ok {
+		r0 = rf(userID)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, uuid.UUID) error); ok {
-		r1 = rf(ctx, userID)
+	if rf, ok := ret.Get(1).(func(uuid.UUID) error); ok {
+		r1 = rf(userID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -57,15 +55,14 @@ type TokenManager_CreateToken_Call struct {
 }
 
 // CreateToken is a helper method to define mock.On call
-//   - ctx context.Context
 //   - userID uuid.UUID
-func (_e *TokenManager_Expecter) CreateToken(ctx interface{}, userID interface{}) *TokenManager_CreateToken_Call {
-	return &TokenManager_CreateToken_Call{Call: _e.mock.On("CreateToken", ctx, userID)}
+func (_e *TokenManager_Expecter) CreateToken(userID interface{}) *TokenManager_CreateToken_Call {
+	return &TokenManager_CreateToken_Call{Call: _e.mock.On("CreateToken", userID)}
 }
 
-func (_c *TokenManager_CreateToken_Call) Run(run func(ctx context.Context, userID uuid.UUID)) *TokenManager_CreateToken_Call {
+func (_c *TokenManager_CreateToken_Call) Run(run func(userID uuid.UUID)) *TokenManager_CreateToken_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(uuid.UUID))
+		run(args[0].(uuid.UUID))
 	})
 	return _c
 }
@@ -75,7 +72,7 @@ func (_c *TokenManager_CreateToken_Call) Return(_a0 string, _a1 error) *TokenMan
 	return _c
 }
 
-func (_c *TokenManager_CreateToken_Call) RunAndReturn(run func(context.Context, uuid.UUID) (string, error)) *TokenManager_CreateToken_Call {
+func (_c *TokenManager_CreateToken_Call) RunAndReturn(run func(uuid.UUID) (string, error)) *TokenManager_CreateToken_Call {
 	_c.Call.Return(run)
 	return _c
 }

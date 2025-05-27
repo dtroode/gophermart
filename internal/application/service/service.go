@@ -22,7 +22,7 @@ type Hasher interface {
 }
 
 type TokenManager interface {
-	CreateToken(ctx context.Context, userID uuid.UUID) (string, error)
+	CreateToken(userID uuid.UUID) (string, error)
 }
 
 type AccrualAdapter interface {
@@ -66,7 +66,7 @@ func (s *Service) RegisterUser(ctx context.Context, params *request.RegisterUser
 		}
 	}
 
-	if err == nil && user.Login == params.Login {
+	if err == nil && user != nil {
 		return "", application.ErrConflict
 	}
 
@@ -85,7 +85,7 @@ func (s *Service) RegisterUser(ctx context.Context, params *request.RegisterUser
 		return "", fmt.Errorf("failed to save user: %w", err)
 	}
 
-	token, err := s.tokenManager.CreateToken(ctx, user.ID)
+	token, err := s.tokenManager.CreateToken(user.ID)
 	if err != nil {
 		return "", fmt.Errorf("failed to create token: %w", err)
 	}
@@ -111,7 +111,7 @@ func (s *Service) Login(ctx context.Context, params *request.Login) (string, err
 		return "", application.ErrUnauthorized
 	}
 
-	token, err := s.tokenManager.CreateToken(ctx, user.ID)
+	token, err := s.tokenManager.CreateToken(user.ID)
 	if err != nil {
 		return "", fmt.Errorf("failed to create token: %w", err)
 	}

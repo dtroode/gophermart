@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 	"strings"
 
@@ -11,7 +10,7 @@ import (
 )
 
 type TokenManager interface {
-	GetUserID(ctx context.Context, tokenString string) (uuid.UUID, error)
+	GetUserID(tokenString string) (uuid.UUID, error)
 }
 
 type Authenticate struct {
@@ -28,8 +27,6 @@ func NewAuthenticate(tokenManager TokenManager, l *logger.Logger) *Authenticate 
 
 func (m *Authenticate) Handle(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -45,7 +42,7 @@ func (m *Authenticate) Handle(next http.Handler) http.Handler {
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-		userID, err := m.tokenManager.GetUserID(ctx, tokenString)
+		userID, err := m.tokenManager.GetUserID(tokenString)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 
@@ -58,7 +55,7 @@ func (m *Authenticate) Handle(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx = auth.SetUserIDToContext(r.Context(), userID)
+		ctx := auth.SetUserIDToContext(r.Context(), userID)
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)

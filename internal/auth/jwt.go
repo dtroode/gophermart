@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -24,7 +23,7 @@ func NewJWT(secretKey string) *JWT {
 	}
 }
 
-func (j *JWT) GetUserID(_ context.Context, tokenString string) (uuid.UUID, error) {
+func (j *JWT) GetUserID(tokenString string) (uuid.UUID, error) {
 	claims := &Claims{}
 
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
@@ -46,7 +45,7 @@ func (j *JWT) GetUserID(_ context.Context, tokenString string) (uuid.UUID, error
 	return claims.UserID, nil
 }
 
-func (j *JWT) CreateToken(_ context.Context, userID uuid.UUID) (string, error) {
+func (j *JWT) CreateToken(userID uuid.UUID) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

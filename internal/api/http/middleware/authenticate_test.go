@@ -14,7 +14,6 @@ import (
 	"github.com/dtroode/gophermart/internal/logger"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -58,7 +57,7 @@ func TestAuthenticate_Handle(t *testing.T) {
 			}(),
 			tokenManagerMock: func() *mocks.TokenManager {
 				tokenManager := mocks.NewTokenManager(t)
-				tokenManager.On("GetUserID", mock.Anything, "some.jwt.token").Once().
+				tokenManager.On("GetUserID", "some.jwt.token").Once().
 					Return(uuid.Nil, errors.New("token manager error"))
 				return tokenManager
 			}(),
@@ -72,7 +71,7 @@ func TestAuthenticate_Handle(t *testing.T) {
 			}(),
 			tokenManagerMock: func() *mocks.TokenManager {
 				tokenManager := mocks.NewTokenManager(t)
-				tokenManager.On("GetUserID", mock.Anything, "some.jwt.token").Once().
+				tokenManager.On("GetUserID", "some.jwt.token").Once().
 					Return(uuid.Nil, nil)
 				return tokenManager
 			}(),
@@ -86,7 +85,7 @@ func TestAuthenticate_Handle(t *testing.T) {
 			}(),
 			tokenManagerMock: func() *mocks.TokenManager {
 				tokenManager := mocks.NewTokenManager(t)
-				tokenManager.On("GetUserID", mock.Anything, "some.jwt.token").Once().
+				tokenManager.On("GetUserID", "some.jwt.token").Once().
 					Return(userID, nil)
 				return tokenManager
 			}(),

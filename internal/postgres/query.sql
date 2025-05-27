@@ -2,11 +2,6 @@
 SELECT * FROM users
 WHERE id = $1 LIMIT 1;
 
--- name: GetUserForUpdate :one
-SELECT * FROM users
-WHERE id = $1 LIMIT 1
-FOR UPDATE;
-
 -- name: GetUserByLogin :one
 SELECT * FROM users
 WHERE login = $1 LIMIT 1;
@@ -25,6 +20,12 @@ RETURNING id, login, created_at, balance;
 -- name: IncrementUserBalance :one
 UPDATE users
 SET balance = balance + $1
+WHERE id = $2
+RETURNING id, login, created_at, balance;
+
+-- name: SubstractUserBalance :one
+UPDATE users
+SET balance = balance - $1
 WHERE id = $2
 RETURNING id, login, created_at, balance;
 

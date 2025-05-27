@@ -11,6 +11,7 @@ import (
 	"github.com/dtroode/gophermart/internal/application/storage"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -119,30 +120,22 @@ func (s *Storage) WithdrawUserBonuses(ctx context.Context, dto *storage.Withdraw
 
 	qtx := s.queries.WithTx(tx)
 
-	userForUpdate, err := qtx.GetUserForUpdate(ctx, pgtype.UUID{Bytes: dto.UserID, Valid: true})
+	dbUser, err := qtx.SubstractUserBalance(ctx, SubstractUserBalanceParams{
+		Balance: pgtype.Float4{Float32: dto.Sum, Valid: true},
+		ID:      pgtype.UUID{Bytes: dto.UserID, Valid: true},
+	})
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, application.ErrNotFound
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.ConstraintName == "users_balance_nonnegative" {
+				return nil, application.ErrNotEnoughBonuses
+			}
 		}
 		return nil, err
 	}
 
-	if userForUpdate.Balance.Float32 < dto.Sum {
-		return nil, application.ErrNotEnoughBonuses
-	}
-
-	balance := userForUpdate.Balance.Float32 - dto.Sum
-
-	userUpdated, err := qtx.SetUserBalance(ctx, SetUserBalanceParams{
-		Balance: pgtype.Float4{Float32: balance, Valid: true},
-		ID:      userForUpdate.ID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
 	_, err = qtx.CreateWithdrawal(ctx, CreateWithdrawalParams{
-		UserID:   userForUpdate.ID,
+		UserID:   dbUser.ID,
 		OrderNum: dto.OrderNum,
 		Amount:   dto.Sum,
 	})
@@ -152,10 +145,10 @@ func (s *Storage) WithdrawUserBonuses(ctx context.Context, dto *storage.Withdraw
 	tx.Commit(ctx)
 
 	user := &model.User{
-		ID:        userUpdated.ID.Bytes,
-		Login:     userUpdated.Login,
-		CreatedAt: userUpdated.CreatedAt.Time,
-		Balance:   userUpdated.Balance.Float32,
+		ID:        dbUser.ID.Bytes,
+		Login:     dbUser.Login,
+		CreatedAt: dbUser.CreatedAt.Time,
+		Balance:   dbUser.Balance.Float32,
 	}
 
 	return user, nil

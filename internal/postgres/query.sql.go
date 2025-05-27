@@ -91,25 +91,6 @@ func (q *Queries) GetUserByLogin(ctx context.Context, login string) (*User, erro
 	return &i, err
 }
 
-const getUserForUpdate = `-- name: GetUserForUpdate :one
-SELECT id, login, password, created_at, balance FROM users
-WHERE id = $1 LIMIT 1
-FOR UPDATE
-`
-
-func (q *Queries) GetUserForUpdate(ctx context.Context, id pgtype.UUID) (*User, error) {
-	row := q.db.QueryRow(ctx, getUserForUpdate, id)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Login,
-		&i.Password,
-		&i.CreatedAt,
-		&i.Balance,
-	)
-	return &i, err
-}
-
 const getUserOrdersNewestFirst = `-- name: GetUserOrdersNewestFirst :many
 SELECT id, user_id, created_at, num, accrual, status FROM orders
 WHERE user_id = $1
@@ -347,6 +328,37 @@ type SetUserBalanceRow struct {
 func (q *Queries) SetUserBalance(ctx context.Context, arg SetUserBalanceParams) (*SetUserBalanceRow, error) {
 	row := q.db.QueryRow(ctx, setUserBalance, arg.Balance, arg.ID)
 	var i SetUserBalanceRow
+	err := row.Scan(
+		&i.ID,
+		&i.Login,
+		&i.CreatedAt,
+		&i.Balance,
+	)
+	return &i, err
+}
+
+const substractUserBalance = `-- name: SubstractUserBalance :one
+UPDATE users
+SET balance = balance - $1
+WHERE id = $2
+RETURNING id, login, created_at, balance
+`
+
+type SubstractUserBalanceParams struct {
+	Balance pgtype.Float4
+	ID      pgtype.UUID
+}
+
+type SubstractUserBalanceRow struct {
+	ID        pgtype.UUID
+	Login     string
+	CreatedAt pgtype.Timestamptz
+	Balance   pgtype.Float4
+}
+
+func (q *Queries) SubstractUserBalance(ctx context.Context, arg SubstractUserBalanceParams) (*SubstractUserBalanceRow, error) {
+	row := q.db.QueryRow(ctx, substractUserBalance, arg.Balance, arg.ID)
+	var i SubstractUserBalanceRow
 	err := row.Scan(
 		&i.ID,
 		&i.Login,

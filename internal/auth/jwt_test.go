@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"context"
 	"testing"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -49,7 +48,7 @@ func TestJWT_GetUserID(t *testing.T) {
 
 			j := NewJWT(secretKey)
 
-			userID, err := j.GetUserID(context.Background(), tt.tokenString)
+			userID, err := j.GetUserID(tt.tokenString)
 
 			if tt.wantError {
 				require.Error(t, err)
@@ -71,7 +70,7 @@ func TestJWT_CreateToken(t *testing.T) {
 
 		j := NewJWT(secretKey)
 
-		tokenString, err := j.CreateToken(context.Background(), userID)
+		tokenString, err := j.CreateToken(userID)
 
 		require.NoError(t, err)
 		require.NotEqual(t, "", tokenString)
