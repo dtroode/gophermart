@@ -74,7 +74,10 @@ func (s *Service) checkOrderJob(orderID uuid.UUID, orderNumber string, duration 
 					return updatedOrder, nil
 				}
 			case <-ctx.Done():
-				return nil, fmt.Errorf("failed to check order, context deadline exceeded")
+				if err := ctx.Err(); err != nil {
+					return nil, fmt.Errorf("ctx is closed: %w", err)
+				}
+				return nil, fmt.Errorf("failed to get reason of context close")
 			}
 		}
 	}

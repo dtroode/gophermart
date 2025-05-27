@@ -46,8 +46,6 @@ func main() {
 
 	log := logger.NewLog(cfg.LogLevel)
 
-	log.Info("config: ", "config", cfg)
-
 	store, err := postgres.NewStorage(cfg.DatabaseDSN)
 	if err != nil {
 		log.Error("failed to start db conn", "error", err)

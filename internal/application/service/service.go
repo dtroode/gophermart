@@ -59,12 +59,14 @@ func NewService(
 }
 
 func (s *Service) RegisterUser(ctx context.Context, params *request.RegisterUser) (string, error) {
-	_, err := s.storage.GetUserByLogin(ctx, params.Login)
+	user, err := s.storage.GetUserByLogin(ctx, params.Login)
 	if err != nil {
 		if !errors.Is(err, application.ErrNotFound) {
 			return "", fmt.Errorf("failed to check user with login: %w", err)
 		}
-	} else {
+	}
+
+	if err == nil && user.Login == params.Login {
 		return "", application.ErrConflict
 	}
 
@@ -73,7 +75,7 @@ func (s *Service) RegisterUser(ctx context.Context, params *request.RegisterUser
 		return "", fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	user := &model.User{
+	user = &model.User{
 		Login:    params.Login,
 		Password: hash,
 	}
@@ -117,7 +119,7 @@ func (s *Service) Login(ctx context.Context, params *request.Login) (string, err
 	return token, nil
 }
 
-func (s *Service) checkByLuna(number string) error {
+func (s *Service) checkByLuhn(number string) error {
 	start := len(number) % 2
 	control := make([]int, 0)
 
@@ -149,7 +151,7 @@ func (s *Service) checkByLuna(number string) error {
 }
 
 func (s *Service) UploadOrder(ctx context.Context, params *request.UploadOrder) (*model.Order, error) {
-	if err := s.checkByLuna(params.OrderNumber); err != nil {
+	if err := s.checkByLuhn(params.OrderNumber); err != nil {
 		return nil, application.ErrUnprocessable
 	}
 
@@ -224,7 +226,7 @@ func (s *Service) GetUserBalance(ctx context.Context, id uuid.UUID) (*response.U
 }
 
 func (s *Service) WithdrawUserBonuses(ctx context.Context, params *request.WithdrawBonuses) error {
-	if err := s.checkByLuna(params.OrderNumber); err != nil {
+	if err := s.checkByLuhn(params.OrderNumber); err != nil {
 		return application.ErrUnprocessable
 	}
 
