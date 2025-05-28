@@ -63,7 +63,7 @@ func (s *Storage) GetUser(ctx context.Context, id uuid.UUID) (*model.User, error
 		Login:     dbUser.Login,
 		Password:  dbUser.Password,
 		CreatedAt: dbUser.CreatedAt.Time,
-		Balance:   dbUser.Balance.Float32,
+		Balance:   dbUser.Balance.Int32,
 	}
 
 	return user, nil
@@ -83,7 +83,7 @@ func (s *Storage) GetUserByLogin(ctx context.Context, login string) (*model.User
 		Login:     dbUser.Login,
 		Password:  dbUser.Password,
 		CreatedAt: dbUser.CreatedAt.Time,
-		Balance:   dbUser.Balance.Float32,
+		Balance:   dbUser.Balance.Int32,
 	}
 
 	return user, nil
@@ -105,7 +105,7 @@ func (s *Storage) SaveUser(ctx context.Context, user *model.User) (*model.User, 
 		Login:     dbUser.Login,
 		Password:  dbUser.Password,
 		CreatedAt: dbUser.CreatedAt.Time,
-		Balance:   dbUser.Balance.Float32,
+		Balance:   dbUser.Balance.Int32,
 	}
 
 	return user, nil
@@ -121,7 +121,7 @@ func (s *Storage) WithdrawUserBonuses(ctx context.Context, dto *storage.Withdraw
 	qtx := s.queries.WithTx(tx)
 
 	dbUser, err := qtx.SubstractUserBalance(ctx, SubstractUserBalanceParams{
-		Balance: pgtype.Float4{Float32: dto.Sum, Valid: true},
+		Balance: pgtype.Int4{Int32: dto.Sum, Valid: true},
 		ID:      pgtype.UUID{Bytes: dto.UserID, Valid: true},
 	})
 	if err != nil {
@@ -148,7 +148,7 @@ func (s *Storage) WithdrawUserBonuses(ctx context.Context, dto *storage.Withdraw
 		ID:        dbUser.ID.Bytes,
 		Login:     dbUser.Login,
 		CreatedAt: dbUser.CreatedAt.Time,
-		Balance:   dbUser.Balance.Float32,
+		Balance:   dbUser.Balance.Int32,
 	}
 
 	return user, nil
@@ -156,7 +156,7 @@ func (s *Storage) WithdrawUserBonuses(ctx context.Context, dto *storage.Withdraw
 
 func (s *Storage) SetUserBalance(ctx context.Context, dto *storage.SetUserBalance) (*model.User, error) {
 	params := SetUserBalanceParams{
-		Balance: pgtype.Float4{Float32: dto.Balance, Valid: true},
+		Balance: pgtype.Int4{Int32: dto.Balance, Valid: true},
 		ID:      pgtype.UUID{Bytes: dto.ID, Valid: true},
 	}
 	dbUser, err := s.queries.SetUserBalance(ctx, params)
@@ -168,7 +168,7 @@ func (s *Storage) SetUserBalance(ctx context.Context, dto *storage.SetUserBalanc
 		ID:        dbUser.ID.Bytes,
 		Login:     dbUser.Login,
 		CreatedAt: dbUser.CreatedAt.Time,
-		Balance:   dbUser.Balance.Float32,
+		Balance:   dbUser.Balance.Int32,
 	}
 
 	return user, nil
@@ -176,7 +176,7 @@ func (s *Storage) SetUserBalance(ctx context.Context, dto *storage.SetUserBalanc
 
 func (s *Storage) IncrementUserBalance(ctx context.Context, dto *storage.IncrementUserBalance) (*model.User, error) {
 	params := IncrementUserBalanceParams{
-		Balance: pgtype.Float4{Float32: dto.Sum, Valid: true},
+		Balance: pgtype.Int4{Int32: dto.Sum, Valid: true},
 		ID:      pgtype.UUID{Bytes: dto.ID, Valid: true},
 	}
 	dbUser, err := s.queries.IncrementUserBalance(ctx, params)
@@ -188,7 +188,7 @@ func (s *Storage) IncrementUserBalance(ctx context.Context, dto *storage.Increme
 		ID:        dbUser.ID.Bytes,
 		Login:     dbUser.Login,
 		CreatedAt: dbUser.CreatedAt.Time,
-		Balance:   dbUser.Balance.Float32,
+		Balance:   dbUser.Balance.Int32,
 	}
 
 	return user, nil
@@ -208,7 +208,7 @@ func (s *Storage) GetOrderByNumber(ctx context.Context, number string) (*model.O
 		UserID:    dbOrder.UserID.Bytes,
 		CreatedAt: dbOrder.CreatedAt.Time,
 		Number:    dbOrder.Num,
-		Accrual:   dbOrder.Accrual.Float32,
+		Accrual:   dbOrder.Accrual.Int32,
 		Status:    model.OrderStatus(dbOrder.Status),
 	}
 
@@ -219,7 +219,7 @@ func (s *Storage) SaveOrder(ctx context.Context, order *model.Order) (*model.Ord
 	params := SaveOrderParams{
 		UserID:  pgtype.UUID{Bytes: order.UserID, Valid: true},
 		Num:     order.Number,
-		Accrual: pgtype.Float4{Float32: order.Accrual, Valid: true},
+		Accrual: pgtype.Int4{Int32: order.Accrual, Valid: true},
 		Status:  OrderStatus(order.Status),
 	}
 	dbOrder, err := s.queries.SaveOrder(ctx, params)
@@ -232,7 +232,7 @@ func (s *Storage) SaveOrder(ctx context.Context, order *model.Order) (*model.Ord
 		UserID:    dbOrder.UserID.Bytes,
 		CreatedAt: dbOrder.CreatedAt.Time,
 		Number:    dbOrder.Num,
-		Accrual:   dbOrder.Accrual.Float32,
+		Accrual:   dbOrder.Accrual.Int32,
 		Status:    model.OrderStatus(dbOrder.Status),
 	}
 
@@ -241,7 +241,7 @@ func (s *Storage) SaveOrder(ctx context.Context, order *model.Order) (*model.Ord
 
 func (s *Storage) SetOrderAccrual(ctx context.Context, dto *storage.SetOrderAccrual) (*model.Order, error) {
 	params := SetOrderAccrualParams{
-		Accrual: pgtype.Float4{Float32: dto.Accrual, Valid: true},
+		Accrual: pgtype.Int4{Int32: dto.Accrual, Valid: true},
 		ID:      pgtype.UUID{Bytes: dto.ID, Valid: true},
 	}
 	dbOrder, err := s.queries.SetOrderAccrual(ctx, params)
@@ -254,7 +254,7 @@ func (s *Storage) SetOrderAccrual(ctx context.Context, dto *storage.SetOrderAccr
 		UserID:    dbOrder.UserID.Bytes,
 		CreatedAt: dbOrder.CreatedAt.Time,
 		Number:    dbOrder.Num,
-		Accrual:   dbOrder.Accrual.Float32,
+		Accrual:   dbOrder.Accrual.Int32,
 		Status:    model.OrderStatus(dbOrder.Status),
 	}
 
@@ -276,7 +276,7 @@ func (s *Storage) SetOrderStatus(ctx context.Context, dto *storage.SetOrderStatu
 		UserID:    dbOrder.UserID.Bytes,
 		CreatedAt: dbOrder.CreatedAt.Time,
 		Number:    dbOrder.Num,
-		Accrual:   dbOrder.Accrual.Float32,
+		Accrual:   dbOrder.Accrual.Int32,
 		Status:    model.OrderStatus(dbOrder.Status),
 	}
 
@@ -302,7 +302,7 @@ func (s *Storage) SetOrderStatusAndAccrual(ctx context.Context, dto *storage.Set
 	}
 
 	accrualParams := SetOrderAccrualParams{
-		Accrual: pgtype.Float4{Float32: dto.Accrual, Valid: true},
+		Accrual: pgtype.Int4{Int32: dto.Accrual, Valid: true},
 		ID:      pgtype.UUID{Bytes: dto.ID, Valid: true},
 	}
 	dbOrder, err := qtx.SetOrderAccrual(ctx, accrualParams)
@@ -311,7 +311,7 @@ func (s *Storage) SetOrderStatusAndAccrual(ctx context.Context, dto *storage.Set
 	}
 
 	userParams := IncrementUserBalanceParams{
-		Balance: pgtype.Float4{Float32: dto.Accrual, Valid: true},
+		Balance: pgtype.Int4{Int32: dto.Accrual, Valid: true},
 		ID:      dbOrder.UserID,
 	}
 	_, err = qtx.IncrementUserBalance(ctx, userParams)
@@ -326,7 +326,7 @@ func (s *Storage) SetOrderStatusAndAccrual(ctx context.Context, dto *storage.Set
 		UserID:    dbOrder.UserID.Bytes,
 		CreatedAt: dbOrder.CreatedAt.Time,
 		Number:    dbOrder.Num,
-		Accrual:   dbOrder.Accrual.Float32,
+		Accrual:   dbOrder.Accrual.Int32,
 		Status:    model.OrderStatus(dbOrder.Status),
 	}
 
@@ -347,7 +347,7 @@ func (s *Storage) GetUserOrdersNewestFirst(ctx context.Context, userID uuid.UUID
 			UserID:    dbOrder.UserID.Bytes,
 			CreatedAt: dbOrder.CreatedAt.Time,
 			Number:    dbOrder.Num,
-			Accrual:   dbOrder.Accrual.Float32,
+			Accrual:   dbOrder.Accrual.Int32,
 			Status:    model.OrderStatus(dbOrder.Status),
 		}
 		orders[i] = order
@@ -356,13 +356,18 @@ func (s *Storage) GetUserOrdersNewestFirst(ctx context.Context, userID uuid.UUID
 	return orders, nil
 }
 
-func (s *Storage) GetUserWithdrawalSum(ctx context.Context, userID uuid.UUID) (float32, error) {
+func (s *Storage) GetUserWithdrawalSum(ctx context.Context, userID uuid.UUID) (int32, error) {
 	dbSum, err := s.queries.GetUserWithdrawalSum(ctx, pgtype.UUID{Bytes: userID, Valid: true})
 	if err != nil {
 		return 0, err
 	}
-
-	return dbSum, nil
+	if sum, ok := dbSum.(int64); ok {
+		return int32(sum), nil
+	}
+	if sum, ok := dbSum.(int32); ok {
+		return sum, nil
+	}
+	return 0, fmt.Errorf("unexpected type for sum: %T", dbSum)
 }
 
 func (s *Storage) GetUserWithdrawals(ctx context.Context, userID uuid.UUID) ([]*model.WithdrawalOrder, error) {
@@ -379,7 +384,7 @@ func (s *Storage) GetUserWithdrawals(ctx context.Context, userID uuid.UUID) ([]*
 			UserID:      withdrawal.UserID.Bytes,
 			OrderNumber: withdrawal.OrderNum,
 			CreatedAt:   withdrawal.CreatedAt.Time,
-			Amount:      float32(withdrawal.Amount),
+			Amount:      withdrawal.Amount,
 		}
 	}
 

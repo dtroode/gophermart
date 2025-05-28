@@ -11,5 +11,5 @@ type User struct {
 	Login     string
 	Password  string
 	CreatedAt time.Time
-	Balance   float32
+	Balance   int32
 }

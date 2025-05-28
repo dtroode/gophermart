@@ -11,10 +11,10 @@ type OrderStatus string
 
 // List of possible order statuses
 const (
-	OrderStatusNew       OrderStatus = "NEW"
+	OrderStatusNew        OrderStatus = "NEW"
 	OrderStatusProcessing OrderStatus = "PROCESSING"
-	OrderStatusInvalid   OrderStatus = "INVALID"
-	OrderStatusProcessed OrderStatus = "PROCESSED"
+	OrderStatusInvalid    OrderStatus = "INVALID"
+	OrderStatusProcessed  OrderStatus = "PROCESSED"
 )
 
 // AccrualOrderStatus represents the status of an order in the accrual system
@@ -34,7 +34,7 @@ type Order struct {
 	UserID    uuid.UUID
 	CreatedAt time.Time
 	Number    string
-	Accrual   float32
+	Accrual   int32
 	Status    OrderStatus
 }
 

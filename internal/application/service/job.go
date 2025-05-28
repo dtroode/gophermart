@@ -64,7 +64,7 @@ func (s *Service) checkOrderJob(orderID uuid.UUID, orderNumber string, duration 
 					params := &storage.SetOrderStatusAndAccrual{
 						ID:      orderID,
 						Status:  model.OrderStatusProcessed,
-						Accrual: order.Accrual,
+						Accrual: int32(order.Accrual * 100.0),
 					}
 					updatedOrder, err := s.storage.SetOrderStatusAndAccrual(ctx, params)
 					if err != nil {

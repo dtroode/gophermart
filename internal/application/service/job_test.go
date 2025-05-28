@@ -70,7 +70,7 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50,
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
@@ -114,7 +114,7 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50,
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
@@ -190,7 +190,7 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50,
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
@@ -266,7 +266,7 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50,
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
@@ -299,7 +299,7 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50,
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
@@ -332,7 +332,7 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50,
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
@@ -382,7 +382,7 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50,
+					Accrual: 5000,
 				}).Once().Return(nil, errors.New("storage error"))
 				return storageMock
 			}(),
