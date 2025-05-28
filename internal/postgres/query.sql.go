@@ -20,7 +20,7 @@ RETURNING id, user_id, order_num, created_at, amount
 type CreateWithdrawalParams struct {
 	UserID   pgtype.UUID
 	OrderNum string
-	Amount   float32
+	Amount   int32
 }
 
 func (q *Queries) CreateWithdrawal(ctx context.Context, arg CreateWithdrawalParams) (*Withdrawal, error) {
@@ -125,15 +125,15 @@ func (q *Queries) GetUserOrdersNewestFirst(ctx context.Context, userID pgtype.UU
 }
 
 const getUserWithdrawalSum = `-- name: GetUserWithdrawalSum :one
-SELECT COALESCE(SUM(amount), 0)::real FROM withdrawals
+SELECT COALESCE(SUM(amount), 0) FROM withdrawals
 WHERE user_id = $1
 `
 
-func (q *Queries) GetUserWithdrawalSum(ctx context.Context, userID pgtype.UUID) (float32, error) {
+func (q *Queries) GetUserWithdrawalSum(ctx context.Context, userID pgtype.UUID) (interface{}, error) {
 	row := q.db.QueryRow(ctx, getUserWithdrawalSum, userID)
-	var column_1 float32
-	err := row.Scan(&column_1)
-	return column_1, err
+	var coalesce interface{}
+	err := row.Scan(&coalesce)
+	return coalesce, err
 }
 
 const getUserWithdrawals = `-- name: GetUserWithdrawals :many
@@ -175,7 +175,7 @@ RETURNING id, login, created_at, balance
 `
 
 type IncrementUserBalanceParams struct {
-	Balance pgtype.Float4
+	Balance pgtype.Int4
 	ID      pgtype.UUID
 }
 
@@ -183,7 +183,7 @@ type IncrementUserBalanceRow struct {
 	ID        pgtype.UUID
 	Login     string
 	CreatedAt pgtype.Timestamptz
-	Balance   pgtype.Float4
+	Balance   pgtype.Int4
 }
 
 func (q *Queries) IncrementUserBalance(ctx context.Context, arg IncrementUserBalanceParams) (*IncrementUserBalanceRow, error) {
@@ -207,7 +207,7 @@ RETURNING id, user_id, created_at, num, accrual, status
 type SaveOrderParams struct {
 	UserID  pgtype.UUID
 	Num     string
-	Accrual pgtype.Float4
+	Accrual pgtype.Int4
 	Status  OrderStatus
 }
 
@@ -262,7 +262,7 @@ RETURNING id, user_id, created_at, num, accrual, status
 `
 
 type SetOrderAccrualParams struct {
-	Accrual pgtype.Float4
+	Accrual pgtype.Int4
 	ID      pgtype.UUID
 }
 
@@ -314,7 +314,7 @@ RETURNING id, login, created_at, balance
 `
 
 type SetUserBalanceParams struct {
-	Balance pgtype.Float4
+	Balance pgtype.Int4
 	ID      pgtype.UUID
 }
 
@@ -322,7 +322,7 @@ type SetUserBalanceRow struct {
 	ID        pgtype.UUID
 	Login     string
 	CreatedAt pgtype.Timestamptz
-	Balance   pgtype.Float4
+	Balance   pgtype.Int4
 }
 
 func (q *Queries) SetUserBalance(ctx context.Context, arg SetUserBalanceParams) (*SetUserBalanceRow, error) {
@@ -345,7 +345,7 @@ RETURNING id, login, created_at, balance
 `
 
 type SubstractUserBalanceParams struct {
-	Balance pgtype.Float4
+	Balance pgtype.Int4
 	ID      pgtype.UUID
 }
 
@@ -353,7 +353,7 @@ type SubstractUserBalanceRow struct {
 	ID        pgtype.UUID
 	Login     string
 	CreatedAt pgtype.Timestamptz
-	Balance   pgtype.Float4
+	Balance   pgtype.Int4
 }
 
 func (q *Queries) SubstractUserBalance(ctx context.Context, arg SubstractUserBalanceParams) (*SubstractUserBalanceRow, error) {

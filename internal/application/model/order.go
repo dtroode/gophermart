@@ -34,7 +34,7 @@ type Order struct {
 	UserID    uuid.UUID
 	CreatedAt time.Time
 	Number    string
-	Accrual   float32
+	Accrual   int32
 	Status    OrderStatus
 }
 
@@ -52,5 +52,5 @@ func NewOrder(
 type AccrualOrder struct {
 	Number  string             `json:"order" binding:"required"`
 	Status  AccrualOrderStatus `json:"status" binding:"required"`
-	Accrual float32            `json:"accrual,omitempty"`
+	Accrual int32            `json:"accrual,omitempty"`
 }

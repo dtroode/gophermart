@@ -27,7 +27,7 @@ type Storage interface {
 	SetOrderStatus(ctx context.Context, dto *storage.SetOrderStatus) (*model.Order, error)
 	SetOrderStatusAndAccrual(ctx context.Context, dto *storage.SetOrderStatusAndAccrual) (*model.Order, error)
 	IncrementUserBalance(ctx context.Context, dto *storage.IncrementUserBalance) (*model.User, error)
-	GetUserWithdrawalSum(ctx context.Context, userID uuid.UUID) (float32, error)
+	GetUserWithdrawalSum(ctx context.Context, userID uuid.UUID) (int32, error) // Changed
 	GetUserWithdrawals(ctx context.Context, userID uuid.UUID) ([]*model.WithdrawalOrder, error)
 	GetUserOrdersNewestFirst(ctx context.Context, userID uuid.UUID) ([]*model.Order, error)
 }
@@ -138,15 +138,15 @@ func (s *Service) checkByLuhn(number string) error {
 	start := len(number) % 2
 	control := make([]int, 0)
 
-	for i, s := range number {
-		sint, err := strconv.Atoi(string(s))
+	for i, charRune := range number {
+		sint, err := strconv.Atoi(string(charRune))
 		if err != nil {
 			return fmt.Errorf("failed to convert string character to number: %w", err)
 		}
 		if (start+i)%2 == 0 {
 			sint = sint * 2
 			if sint > 9 {
-				sint = sint % 9
+				sint = sint - 9 // Corrected Luhn algorithm for numbers > 9
 			}
 		}
 		control = append(control, sint)
@@ -159,7 +159,7 @@ func (s *Service) checkByLuhn(number string) error {
 	}
 
 	if sum%10 != 0 {
-		return fmt.Errorf("not valid by luna")
+		return fmt.Errorf("not valid by luhn")
 	}
 
 	return nil
@@ -210,7 +210,7 @@ func (s *Service) ListUserOrders(ctx context.Context, id uuid.UUID) ([]*response
 		resp[i] = &response.UserOrder{
 			Number:     order.Number,
 			Status:     string(order.Status),
-			Accrual:    float32(order.Accrual),
+			Accrual:    float32(order.Accrual) / 100.0, // Changed
 			UploadedAt: order.CreatedAt.Format(time.RFC3339),
 		}
 	}
@@ -233,8 +233,8 @@ func (s *Service) GetUserBalance(ctx context.Context, id uuid.UUID) (*response.U
 	}
 
 	resp := &response.UserBalance{
-		Current:   user.Balance,
-		Withdrawn: withdrawalSum,
+		Current:   float32(user.Balance) / 100.0,   // Changed
+		Withdrawn: float32(withdrawalSum) / 100.0, // Changed
 	}
 
 	return resp, nil
@@ -278,7 +278,7 @@ func (s *Service) ListUserWithdrawals(ctx context.Context, id uuid.UUID) ([]*res
 	for i, withdrawal := range withdrawals {
 		resp[i] = &response.UserWithdrawal{
 			OrderNumber: withdrawal.OrderNumber,
-			Sum:         withdrawal.Amount,
+			Sum:         float32(withdrawal.Amount) / 100.0, // Changed
 			ProcessedAt: withdrawal.CreatedAt.Format(time.RFC3339),
 		}
 	}

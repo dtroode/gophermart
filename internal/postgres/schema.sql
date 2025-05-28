@@ -5,7 +5,7 @@ CREATE TABLE users (
     login varchar(64) NOT NULL UNIQUE,
     password varchar(64) NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now(),
-    balance real DEFAULT 0
+    balance integer DEFAULT 0
 );
 
 CREATE TABLE orders (
@@ -13,7 +13,7 @@ CREATE TABLE orders (
     user_id uuid NOT NULL references users(id),
     created_at timestamptz NOT NULL DEFAULT now(),
     num varchar(256) NOT NULL UNIQUE,
-    accrual real,
+    accrual integer,
     status order_status NOT NULL DEFAULT 'NEW'
 );
 
@@ -22,5 +22,5 @@ CREATE TABLE withdrawals (
     user_id uuid NOT NULL references users(id),
     order_num varchar(256) NOT NULL,
     created_at timestamptz NOT NULL DEFAULT now(),
-    amount real NOT NULL
+    amount integer NOT NULL
 );

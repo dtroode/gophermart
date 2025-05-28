@@ -11,7 +11,7 @@ type Withdrawal struct {
 	UserID    uuid.UUID
 	OrderID   uuid.UUID
 	CreatedAt time.Time
-	Amount    float32
+	Amount    int32
 }
 
 type WithdrawalOrder struct {
@@ -20,5 +20,5 @@ type WithdrawalOrder struct {
 	OrderID     uuid.UUID
 	OrderNumber string
 	CreatedAt   time.Time
-	Amount      float32
+	Amount      int32
 }

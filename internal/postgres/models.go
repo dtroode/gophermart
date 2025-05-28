@@ -60,7 +60,7 @@ type Order struct {
 	UserID    pgtype.UUID
 	CreatedAt pgtype.Timestamptz
 	Num       string
-	Accrual   pgtype.Float4
+	Accrual   pgtype.Int4
 	Status    OrderStatus
 }
 
@@ -69,7 +69,7 @@ type User struct {
 	Login     string
 	Password  string
 	CreatedAt pgtype.Timestamptz
-	Balance   pgtype.Float4
+	Balance   pgtype.Int4
 }
 
 type Withdrawal struct {
@@ -77,5 +77,5 @@ type Withdrawal struct {
 	UserID    pgtype.UUID
 	OrderNum  string
 	CreatedAt pgtype.Timestamptz
-	Amount    float32
+	Amount    int32
 }

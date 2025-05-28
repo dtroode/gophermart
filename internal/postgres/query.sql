@@ -51,7 +51,7 @@ WHERE id = $2
 RETURNING id, user_id, created_at, num, accrual, status;
 
 -- name: GetUserWithdrawalSum :one
-SELECT COALESCE(SUM(amount), 0)::real FROM withdrawals
+SELECT COALESCE(SUM(amount), 0) FROM withdrawals
 WHERE user_id = $1;
 
 -- name: GetUserWithdrawals :many
