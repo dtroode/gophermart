@@ -7,7 +7,7 @@ import (
 
 type SetOrderAccrual struct {
 	ID      uuid.UUID
-	Accrual float32
+	Accrual int32
 }
 
 type SetOrderStatus struct {
@@ -18,21 +18,21 @@ type SetOrderStatus struct {
 type SetOrderStatusAndAccrual struct {
 	ID      uuid.UUID
 	Status  model.OrderStatus
-	Accrual float32
+	Accrual int32
 }
 
 type SetUserBalance struct {
 	ID      uuid.UUID
-	Balance float32
+	Balance int32
 }
 
 type IncrementUserBalance struct {
 	ID  uuid.UUID
-	Sum float32
+	Sum int32
 }
 
 type WithdrawUserBonuses struct {
 	UserID   uuid.UUID
 	OrderNum string
-	Sum      float32
+	Sum      int32
 }

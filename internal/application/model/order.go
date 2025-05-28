@@ -11,10 +11,10 @@ type OrderStatus string
 
 // List of possible order statuses
 const (
-	OrderStatusNew       OrderStatus = "NEW"
+	OrderStatusNew        OrderStatus = "NEW"
 	OrderStatusProcessing OrderStatus = "PROCESSING"
-	OrderStatusInvalid   OrderStatus = "INVALID"
-	OrderStatusProcessed OrderStatus = "PROCESSED"
+	OrderStatusInvalid    OrderStatus = "INVALID"
+	OrderStatusProcessed  OrderStatus = "PROCESSED"
 )
 
 // AccrualOrderStatus represents the status of an order in the accrual system
@@ -52,5 +52,5 @@ func NewOrder(
 type AccrualOrder struct {
 	Number  string             `json:"order" binding:"required"`
 	Status  AccrualOrderStatus `json:"status" binding:"required"`
-	Accrual int32            `json:"accrual,omitempty"`
+	Accrual float32            `json:"accrual,omitempty"`
 }
