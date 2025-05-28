@@ -17,6 +17,21 @@ import (
 	"github.com/google/uuid"
 )
 
+type Storage interface {
+	GetUser(ctx context.Context, id uuid.UUID) (*model.User, error)
+	GetUserByLogin(ctx context.Context, login string) (*model.User, error)
+	SaveUser(ctx context.Context, user *model.User) (*model.User, error)
+	WithdrawUserBonuses(ctx context.Context, dto *storage.WithdrawUserBonuses) (*model.User, error)
+	GetOrderByNumber(ctx context.Context, number string) (*model.Order, error)
+	SaveOrder(ctx context.Context, order *model.Order) (*model.Order, error)
+	SetOrderStatus(ctx context.Context, dto *storage.SetOrderStatus) (*model.Order, error)
+	SetOrderStatusAndAccrual(ctx context.Context, dto *storage.SetOrderStatusAndAccrual) (*model.Order, error)
+	IncrementUserBalance(ctx context.Context, dto *storage.IncrementUserBalance) (*model.User, error)
+	GetUserWithdrawalSum(ctx context.Context, userID uuid.UUID) (float32, error)
+	GetUserWithdrawals(ctx context.Context, userID uuid.UUID) ([]*model.WithdrawalOrder, error)
+	GetUserOrdersNewestFirst(ctx context.Context, userID uuid.UUID) ([]*model.Order, error)
+}
+
 type Hasher interface {
 	Hash(ctx context.Context, password []byte) (string, error)
 }
@@ -34,7 +49,7 @@ type WorkerPool interface {
 }
 
 type Service struct {
-	storage        storage.Storage
+	storage        Storage
 	hasher         Hasher
 	tokenManager   TokenManager
 	accrualAdapter AccrualAdapter
@@ -43,7 +58,7 @@ type Service struct {
 }
 
 func NewService(
-	storage storage.Storage,
+	storage Storage,
 	hasher Hasher,
 	tokenManager TokenManager,
 	accrualAdapter AccrualAdapter,

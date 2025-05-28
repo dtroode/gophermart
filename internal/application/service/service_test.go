@@ -14,7 +14,6 @@ import (
 	"github.com/dtroode/gophermart/internal/application/service"
 	mocks "github.com/dtroode/gophermart/internal/application/service/mocks"
 	"github.com/dtroode/gophermart/internal/application/storage"
-	storageMocks "github.com/dtroode/gophermart/internal/application/storage/mocks"
 	"github.com/dtroode/gophermart/internal/workerpool"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -34,7 +33,7 @@ func TestService_RegisterUser(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		storageMock      *storageMocks.Storage
+		storageMock      *mocks.Storage
 		hasherMock       *mocks.Hasher
 		tokenManagerMock *mocks.TokenManager
 		workerPoolMock   *mocks.WorkerPool
@@ -42,24 +41,24 @@ func TestService_RegisterUser(t *testing.T) {
 		expectedErr      error
 	}{
 		"failed to get user by login": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(nil, errors.New("storage error"))
 				return mock
 			}(),
 			expectedErr: fmt.Errorf("failed to check user with login: %w", errors.New("storage error")),
 		},
 		"login is taken": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(&model.User{}, nil)
 				return mock
 			}(),
 			expectedErr: application.ErrConflict,
 		},
 		"failed to hash password": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(nil, application.ErrNotFound)
 				return mock
 			}(),
@@ -71,8 +70,8 @@ func TestService_RegisterUser(t *testing.T) {
 			expectedErr: fmt.Errorf("failed to hash password: %w", errors.New("hasher error")),
 		},
 		"failed to save user": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(nil, application.ErrNotFound)
 				mock.On("SaveUser", ctx, &model.User{Login: params.Login, Password: "hash"}).Once().Return(nil, errors.New("storage error"))
 				return mock
@@ -85,8 +84,8 @@ func TestService_RegisterUser(t *testing.T) {
 			expectedErr: fmt.Errorf("failed to save user: %w", errors.New("storage error")),
 		},
 		"failed to create token": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(nil, application.ErrNotFound)
 				mock.On("SaveUser", ctx, &model.User{Login: params.Login, Password: "hash"}).Once().Return(&model.User{Login: params.Login, ID: uuid.Max}, nil)
 				return mock
@@ -104,8 +103,8 @@ func TestService_RegisterUser(t *testing.T) {
 			expectedErr: fmt.Errorf("failed to create token: %w", errors.New("token manager error")),
 		},
 		"success": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(nil, application.ErrNotFound)
 				mock.On("SaveUser", ctx, &model.User{Login: params.Login, Password: "hash"}).Once().Return(&model.User{Login: params.Login, ID: uuid.Max}, nil)
 				return mock
@@ -156,31 +155,31 @@ func TestService_Login(t *testing.T) {
 	}
 
 	tests := map[string]struct {
-		storageMock      *storageMocks.Storage
+		storageMock      *mocks.Storage
 		hasherMock       *mocks.Hasher
 		tokenManagerMock *mocks.TokenManager
 		expectedResp     string
 		expectedErr      error
 	}{
 		"failed to get user": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(nil, errors.New("storage error"))
 				return mock
 			}(),
 			expectedErr: fmt.Errorf("failed to get user: %w", errors.New("storage error")),
 		},
 		"user not found": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(nil, application.ErrNotFound)
 				return mock
 			}(),
 			expectedErr: application.ErrUnauthorized,
 		},
 		"failed to hash password": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(&model.User{}, nil)
 				return mock
 			}(),
@@ -192,8 +191,8 @@ func TestService_Login(t *testing.T) {
 			expectedErr: fmt.Errorf("failed to hash password: %w", errors.New("hasher error")),
 		},
 		"password doesn't match hash": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(&model.User{Password: "diff-hash"}, nil)
 				return mock
 			}(),
@@ -205,8 +204,8 @@ func TestService_Login(t *testing.T) {
 			expectedErr: application.ErrUnauthorized,
 		},
 		"failed to create token": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(&model.User{ID: uuid.Max, Password: "hash"}, nil)
 				return mock
 			}(),
@@ -223,8 +222,8 @@ func TestService_Login(t *testing.T) {
 			expectedErr: fmt.Errorf("failed to create token: %w", errors.New("token manager error")),
 		},
 		"success": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserByLogin", ctx, params.Login).Once().Return(&model.User{ID: uuid.Max, Password: "hash"}, nil)
 				return mock
 			}(),
@@ -276,7 +275,7 @@ func TestService_UploadOrder(t *testing.T) {
 
 	tests := map[string]struct {
 		orderNumber  string
-		storageMock  *storageMocks.Storage
+		storageMock  *mocks.Storage
 		accrualMock  *mocks.AccrualAdapter
 		poolMock     *mocks.WorkerPool
 		expectedResp *model.Order
@@ -289,8 +288,8 @@ func TestService_UploadOrder(t *testing.T) {
 		},
 		"failed to check order exists": {
 			orderNumber: "4561261212345467",
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetOrderByNumber", ctx, "4561261212345467").Once().Return(nil, errors.New("storage error"))
 				return mock
 			}(),
@@ -299,8 +298,8 @@ func TestService_UploadOrder(t *testing.T) {
 		},
 		"order exists for same user": {
 			orderNumber: "4561261212345467",
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetOrderByNumber", ctx, "4561261212345467").Once().Return(&model.Order{UserID: params.UserID}, nil)
 				return mock
 			}(),
@@ -309,8 +308,8 @@ func TestService_UploadOrder(t *testing.T) {
 		},
 		"order exists for different user": {
 			orderNumber: "4561261212345467",
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetOrderByNumber", ctx, "4561261212345467").Once().Return(&model.Order{UserID: uuid.New()}, nil)
 				return mock
 			}(),
@@ -319,8 +318,8 @@ func TestService_UploadOrder(t *testing.T) {
 		},
 		"failed to save order": {
 			orderNumber: "4561261212345467",
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetOrderByNumber", ctx, "4561261212345467").Once().Return(nil, application.ErrNotFound)
 				mock.On("SaveOrder", ctx, &model.Order{UserID: params.UserID, Number: "4561261212345467", Status: model.OrderStatusNew}).Once().Return(nil, errors.New("storage error"))
 				return mock
@@ -330,8 +329,8 @@ func TestService_UploadOrder(t *testing.T) {
 		},
 		"success": {
 			orderNumber: "66465778752",
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetOrderByNumber", ctx, "66465778752").Once().Return(nil, application.ErrNotFound)
 				mock.On("SaveOrder", ctx, &model.Order{UserID: params.UserID, Number: "66465778752", Status: model.OrderStatusNew}).Once().Return(&model.Order{ID: uuid.Max, UserID: params.UserID, Number: "66465778752", Status: model.OrderStatusNew}, nil)
 				return mock
@@ -380,29 +379,29 @@ func TestService_ListUserOrders(t *testing.T) {
 	userID := uuid.New()
 
 	tests := map[string]struct {
-		storageMock  *storageMocks.Storage
+		storageMock  *mocks.Storage
 		expectedResp []*response.UserOrder
 		expectedErr  error
 	}{
 		"failed to get orders": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserOrdersNewestFirst", ctx, userID).Once().Return(nil, errors.New("storage error"))
 				return mock
 			}(),
 			expectedErr: fmt.Errorf("failed to get user orders: %w", errors.New("storage error")),
 		},
 		"no orders found": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserOrdersNewestFirst", ctx, userID).Once().Return([]*model.Order{}, nil)
 				return mock
 			}(),
 			expectedErr: application.ErrNoData,
 		},
 		"success": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserOrdersNewestFirst", ctx, userID).Once().Return([]*model.Order{
 					{
 						ID:        uuid.New(),
@@ -459,29 +458,29 @@ func TestService_GetUserBalance(t *testing.T) {
 	userID := uuid.New()
 
 	tests := map[string]struct {
-		storageMock  *storageMocks.Storage
+		storageMock  *mocks.Storage
 		expectedResp *response.UserBalance
 		expectedErr  error
 	}{
 		"failed to get user": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUser", ctx, userID).Once().Return(nil, errors.New("storage error"))
 				return mock
 			}(),
 			expectedErr: fmt.Errorf("failed to get user: %w", errors.New("storage error")),
 		},
 		"user not found": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUser", ctx, userID).Once().Return(nil, application.ErrNotFound)
 				return mock
 			}(),
 			expectedErr: application.ErrNotFound,
 		},
 		"failed to get user withdrawal sum": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: float32(100)}, nil)
 				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(float32(0), errors.New("storage error"))
 				return mock
@@ -489,8 +488,8 @@ func TestService_GetUserBalance(t *testing.T) {
 			expectedErr: fmt.Errorf("failed to get user withdrawal sum: %w", errors.New("storage error")),
 		},
 		"success": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: float32(100)}, nil)
 				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(float32(50), nil)
 				return mock
@@ -534,7 +533,7 @@ func TestService_WithdrawUserBonuses(t *testing.T) {
 
 	tests := map[string]struct {
 		orderNumber string
-		storageMock *storageMocks.Storage
+		storageMock *mocks.Storage
 		expectedErr error
 	}{
 		"order number isn't valid": {
@@ -543,8 +542,8 @@ func TestService_WithdrawUserBonuses(t *testing.T) {
 		},
 		"user not found": {
 			orderNumber: "4561261212345467",
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("WithdrawUserBonuses", ctx, &storage.WithdrawUserBonuses{
 					UserID:   params.UserID,
 					OrderNum: "4561261212345467",
@@ -556,8 +555,8 @@ func TestService_WithdrawUserBonuses(t *testing.T) {
 		},
 		"not enough bonuses": {
 			orderNumber: "4561261212345467",
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("WithdrawUserBonuses", ctx, &storage.WithdrawUserBonuses{
 					UserID:   params.UserID,
 					OrderNum: "4561261212345467",
@@ -569,8 +568,8 @@ func TestService_WithdrawUserBonuses(t *testing.T) {
 		},
 		"failed to withdraw user bonuses": {
 			orderNumber: "4561261212345467",
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("WithdrawUserBonuses", ctx, &storage.WithdrawUserBonuses{
 					UserID:   params.UserID,
 					OrderNum: "4561261212345467",
@@ -582,8 +581,8 @@ func TestService_WithdrawUserBonuses(t *testing.T) {
 		},
 		"success": {
 			orderNumber: "4561261212345467",
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("WithdrawUserBonuses", ctx, &storage.WithdrawUserBonuses{
 					UserID:   params.UserID,
 					OrderNum: "4561261212345467",
@@ -624,29 +623,29 @@ func TestService_ListUserWithdrawals(t *testing.T) {
 	userID := uuid.New()
 
 	tests := map[string]struct {
-		storageMock  *storageMocks.Storage
+		storageMock  *mocks.Storage
 		expectedResp []*response.UserWithdrawal
 		expectedErr  error
 	}{
 		"failed to get user withdrawals": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserWithdrawals", ctx, userID).Once().Return(nil, errors.New("storage error"))
 				return mock
 			}(),
 			expectedErr: fmt.Errorf("failed to get user withdrawals: %w", errors.New("storage error")),
 		},
 		"no withdrawals": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserWithdrawals", ctx, userID).Once().Return([]*model.WithdrawalOrder{}, nil)
 				return mock
 			}(),
 			expectedErr: application.ErrNoData,
 		},
 		"success": {
-			storageMock: func() *storageMocks.Storage {
-				mock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
 				mock.On("GetUserWithdrawals", ctx, userID).Once().Return([]*model.WithdrawalOrder{
 					{OrderNumber: "1234567890", Amount: 100, CreatedAt: time.Now()},
 				}, nil)

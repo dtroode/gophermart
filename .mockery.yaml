@@ -19,6 +19,4 @@ packages:
             TokenManager:
             AccrualAdapter:
             WorkerPool:
-    github.com/dtroode/gophermart/internal/application/storage:
-        interfaces:
             Storage:

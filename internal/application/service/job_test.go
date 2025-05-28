@@ -11,7 +11,6 @@ import (
 	"github.com/dtroode/gophermart/internal/application/model"
 	"github.com/dtroode/gophermart/internal/application/service/mocks"
 	"github.com/dtroode/gophermart/internal/application/storage"
-	storageMocks "github.com/dtroode/gophermart/internal/application/storage/mocks"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -23,7 +22,7 @@ func TestService_checkOrderJob(t *testing.T) {
 
 	tests := map[string]struct {
 		accrualMock  *mocks.AccrualAdapter
-		storageMock  *storageMocks.Storage
+		storageMock  *mocks.Storage
 		expectedResp any
 		expectedErr  error
 	}{
@@ -37,8 +36,8 @@ func TestService_checkOrderJob(t *testing.T) {
 					}, nil)
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatus", mock.Anything, &storage.SetOrderStatus{
 					ID:     orderID,
 					Status: model.OrderStatusInvalid,
@@ -66,8 +65,8 @@ func TestService_checkOrderJob(t *testing.T) {
 					}, nil)
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
@@ -102,8 +101,8 @@ func TestService_checkOrderJob(t *testing.T) {
 				}, nil).Once()
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatus", mock.Anything, &storage.SetOrderStatus{
 					ID:     orderID,
 					Status: model.OrderStatusProcessing,
@@ -145,8 +144,8 @@ func TestService_checkOrderJob(t *testing.T) {
 				}, nil).Once()
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatus", mock.Anything, &storage.SetOrderStatus{
 					ID:     orderID,
 					Status: model.OrderStatusProcessing,
@@ -186,8 +185,8 @@ func TestService_checkOrderJob(t *testing.T) {
 				}, nil).Once()
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
@@ -221,8 +220,8 @@ func TestService_checkOrderJob(t *testing.T) {
 				}, nil).Once()
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatus", mock.Anything, &storage.SetOrderStatus{
 					ID:     orderID,
 					Status: model.OrderStatusInvalid,
@@ -254,8 +253,8 @@ func TestService_checkOrderJob(t *testing.T) {
 				}, nil).Once()
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatus", mock.Anything, &storage.SetOrderStatus{
 					ID:     orderID,
 					Status: model.OrderStatusProcessing,
@@ -295,8 +294,8 @@ func TestService_checkOrderJob(t *testing.T) {
 				}, nil).Once()
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
@@ -328,8 +327,8 @@ func TestService_checkOrderJob(t *testing.T) {
 				}, nil).Once()
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
@@ -358,8 +357,8 @@ func TestService_checkOrderJob(t *testing.T) {
 				}, nil).Once()
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatus", mock.Anything, &storage.SetOrderStatus{
 					ID:     orderID,
 					Status: model.OrderStatusProcessing,
@@ -378,8 +377,8 @@ func TestService_checkOrderJob(t *testing.T) {
 				}, nil).Once()
 				return accrual
 			}(),
-			storageMock: func() *storageMocks.Storage {
-				storageMock := storageMocks.NewStorage(t)
+			storageMock: func() *mocks.Storage {
+				storageMock := mocks.NewStorage(t)
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
