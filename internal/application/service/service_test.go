@@ -399,7 +399,7 @@ func TestService_ListUserOrders(t *testing.T) {
 			}(),
 			expectedErr: application.ErrNoData,
 		},
-		"success with orders": { // Updated: Test name
+		"success with orders": {
 			storageMock: func() *mocks.Storage {
 				mockStorage := mocks.NewStorage(t)
 				mockStorage.On("GetUserOrdersNewestFirst", ctx, userID).Once().Return([]*model.Order{
@@ -408,7 +408,7 @@ func TestService_ListUserOrders(t *testing.T) {
 						UserID:    userID,
 						Number:    "4561261212345467",
 						Status:    model.OrderStatusProcessed,
-						Accrual:   10000, // 100.00 in cents
+						Accrual:   10000,
 						CreatedAt: now,
 					},
 					{
@@ -416,7 +416,7 @@ func TestService_ListUserOrders(t *testing.T) {
 						UserID:    userID,
 						Number:    "1234567890123456",
 						Status:    model.OrderStatusNew,
-						Accrual:   0, // 0.00 in cents
+						Accrual:   0,
 						CreatedAt: now.Add(-time.Hour),
 					},
 				}, nil)
@@ -426,18 +426,18 @@ func TestService_ListUserOrders(t *testing.T) {
 				{
 					Number:     "4561261212345467",
 					Status:     string(model.OrderStatusProcessed),
-					Accrual:    100.00, // Expected as float
+					Accrual:    100.00,
 					UploadedAt: now.Format(time.RFC3339),
 				},
 				{
 					Number:     "1234567890123456",
 					Status:     string(model.OrderStatusNew),
-					Accrual:    0.00, // Expected as float
+					Accrual:    0.00,
 					UploadedAt: now.Add(-time.Hour).Format(time.RFC3339),
 				},
 			},
 		},
-		"success with zero accrual": { // New Test Case
+		"success with zero accrual": {
 			storageMock: func() *mocks.Storage {
 				mockStorage := mocks.NewStorage(t)
 				mockStorage.On("GetUserOrdersNewestFirst", ctx, userID).Once().Return([]*model.Order{
@@ -446,7 +446,7 @@ func TestService_ListUserOrders(t *testing.T) {
 						UserID:    userID,
 						Number:    "ORDER_ZERO_ACCRUAL",
 						Status:    model.OrderStatusProcessed,
-						Accrual:   0, // 0 cents
+						Accrual:   0,
 						CreatedAt: now,
 					},
 				}, nil)
@@ -461,7 +461,7 @@ func TestService_ListUserOrders(t *testing.T) {
 				},
 			},
 		},
-		"success with specific accrual": { // New Test Case
+		"success with specific accrual": {
 			storageMock: func() *mocks.Storage {
 				mockStorage := mocks.NewStorage(t)
 				mockStorage.On("GetUserOrdersNewestFirst", ctx, userID).Once().Return([]*model.Order{
@@ -470,7 +470,7 @@ func TestService_ListUserOrders(t *testing.T) {
 						UserID:    userID,
 						Number:    "ORDER_12345_ACCRUAL",
 						Status:    model.OrderStatusProcessed,
-						Accrual:   12345, // 123.45 in cents
+						Accrual:   12345,
 						CreatedAt: now,
 					},
 				}, nil)
@@ -503,7 +503,7 @@ func TestService_ListUserOrders(t *testing.T) {
 					actualOrder := resp[i]
 					assert.Equal(t, expectedOrder.Number, actualOrder.Number)
 					assert.Equal(t, expectedOrder.Status, actualOrder.Status)
-					assert.InDelta(t, expectedOrder.Accrual, actualOrder.Accrual, 0.001) // Use InDelta for float comparison
+					assert.InDelta(t, expectedOrder.Accrual, actualOrder.Accrual, 0.001)
 					assert.Equal(t, expectedOrder.UploadedAt, actualOrder.UploadedAt)
 				}
 			}
@@ -539,29 +539,29 @@ func TestService_GetUserBalance(t *testing.T) {
 		"failed to get user withdrawal sum": {
 			storageMock: func() *mocks.Storage {
 				mock := mocks.NewStorage(t)
-				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: 10000}, nil) // 100.00 in cents
+				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: 10000}, nil)
 				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(int32(0), errors.New("storage error"))
 				return mock
 			}(),
 			expectedErr: fmt.Errorf("failed to get user withdrawal sum: %w", errors.New("storage error")),
 		},
-		"success general case": { // Updated test name
+		"success general case": {
 			storageMock: func() *mocks.Storage {
 				mock := mocks.NewStorage(t)
-				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: 10000}, nil) // 100.00 in cents
-				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(int32(5000), nil)    // 50.00 in cents
+				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: 10000}, nil)
+				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(int32(5000), nil)
 				return mock
 			}(),
 			expectedResp: &response.UserBalance{
-				Current:   100.00, // Expected as float
-				Withdrawn: 50.00,  // Expected as float
+				Current:   100.00,
+				Withdrawn: 50.00,
 			},
 		},
-		"balance is zero": { // New Test Case
+		"balance is zero": {
 			storageMock: func() *mocks.Storage {
 				mock := mocks.NewStorage(t)
-				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: 0}, nil) // 0 cents
-				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(int32(0), nil)   // 0 cents
+				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: 0}, nil)
+				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(int32(0), nil)
 				return mock
 			}(),
 			expectedResp: &response.UserBalance{
@@ -569,11 +569,11 @@ func TestService_GetUserBalance(t *testing.T) {
 				Withdrawn: 0.0,
 			},
 		},
-		"balance is 20560 cents": { // New Test Case
+		"balance is 20560 cents": {
 			storageMock: func() *mocks.Storage {
 				mock := mocks.NewStorage(t)
-				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: 20560}, nil) // 205.60 in cents
-				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(int32(0), nil)       // 0 cents
+				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: 20560}, nil)
+				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(int32(0), nil)
 				return mock
 			}(),
 			expectedResp: &response.UserBalance{
@@ -581,11 +581,11 @@ func TestService_GetUserBalance(t *testing.T) {
 				Withdrawn: 0.0,
 			},
 		},
-		"withdrawn is 10025 cents": { // New Test Case
+		"withdrawn is 10025 cents": {
 			storageMock: func() *mocks.Storage {
 				mock := mocks.NewStorage(t)
-				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: 30000}, nil) // 300.00 in cents
-				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(int32(10025), nil)   // 100.25 in cents
+				mock.On("GetUser", ctx, userID).Once().Return(&model.User{Balance: 30000}, nil)
+				mock.On("GetUserWithdrawalSum", ctx, userID).Once().Return(int32(10025), nil)
 				return mock
 			}(),
 			expectedResp: &response.UserBalance{
@@ -620,58 +620,58 @@ func TestService_WithdrawUserBonuses(t *testing.T) {
 
 	tests := map[string]struct {
 		params      *request.WithdrawBonuses
-		orderNumber string // Keep for table structure, but params.OrderNumber will be used
+		orderNumber string
 		storageMock *mocks.Storage
 		expectedErr error
 	}{
-		// "order number isn't valid": {
-		// 	params:      &request.WithdrawBonuses{UserID: userID, OrderNumber: "4561261212345464", Sum: 10.0},
-		// 	expectedErr: application.ErrUnprocessable,
-		// },
-		// "user not found": {
-		// 	params: &request.WithdrawBonuses{UserID: userID, OrderNumber: "4561261212345467", Sum: 10.0},
-		// 	storageMock: func() *mocks.Storage {
-		// 		mock := mocks.NewStorage(t)
-		// 		mock.On("WithdrawUserBonuses", ctx, &storage.WithdrawUserBonuses{
-		// 			UserID:   userID,
-		// 			OrderNum: "4561261212345467",
-		// 			Sum:      1000,
-		// 		}).Once().Return(nil, application.ErrNotFound)
-		// 		return mock
-		// 	}(),
-		// 	expectedErr: application.ErrNotFound,
-		// },
-		// "not enough bonuses": {
-		// 	params: &request.WithdrawBonuses{UserID: userID, OrderNumber: "4561261212345467", Sum: 100.0},
-		// 	storageMock: func() *mocks.Storage {
-		// 		mock := mocks.NewStorage(t)
-		// 		mock.On("WithdrawUserBonuses", ctx, &storage.WithdrawUserBonuses{
-		// 			UserID:   userID,
-		// 			OrderNum: "4561261212345467",
-		// 			Sum:      10000,
-		// 		}).Once().Return(nil, application.ErrNotEnoughBonuses)
-		// 		return mock
-		// 	}(),
-		// 	expectedErr: application.ErrNotEnoughBonuses,
-		// },
-		// "failed to withdraw user bonuses": {
-		// 	params: &request.WithdrawBonuses{UserID: userID, OrderNumber: "4561261212345467", Sum: 20.0},
-		// 	storageMock: func() *mocks.Storage {
-		// 		mock := mocks.NewStorage(t)
-		// 		mock.On("WithdrawUserBonuses", ctx, &storage.WithdrawUserBonuses{
-		// 			UserID:   userID,
-		// 			OrderNum: "4561261212345467",
-		// 			Sum:      2000,
-		// 		}).Once().Return(nil, errors.New("storage error"))
-		// 		return mock
-		// 	}(),
-		// 	expectedErr: fmt.Errorf("failed to withdraw user bonuses: %w", errors.New("storage error")),
-		// },
-		"success": {
-			params: &request.WithdrawBonuses{UserID: userID, OrderNumber: "4561261212345467", Sum: 10.50}, // Test with 10.50
+		"order number isn't valid": {
+			params:      &request.WithdrawBonuses{UserID: userID, OrderNumber: "4561261212345464", Sum: 10.0},
+			expectedErr: application.ErrUnprocessable,
+		},
+		"user not found": {
+			params: &request.WithdrawBonuses{UserID: userID, OrderNumber: "4561261212345467", Sum: 10.0},
 			storageMock: func() *mocks.Storage {
 				mock := mocks.NewStorage(t)
-				// Verify that the Sum passed to storage is indeed the float32 value
+				mock.On("WithdrawUserBonuses", ctx, &storage.WithdrawUserBonuses{
+					UserID:   userID,
+					OrderNum: "4561261212345467",
+					Sum:      1000,
+				}).Once().Return(nil, application.ErrNotFound)
+				return mock
+			}(),
+			expectedErr: application.ErrNotFound,
+		},
+		"not enough bonuses": {
+			params: &request.WithdrawBonuses{UserID: userID, OrderNumber: "4561261212345467", Sum: 100.0},
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
+				mock.On("WithdrawUserBonuses", ctx, &storage.WithdrawUserBonuses{
+					UserID:   userID,
+					OrderNum: "4561261212345467",
+					Sum:      10000,
+				}).Once().Return(nil, application.ErrNotEnoughBonuses)
+				return mock
+			}(),
+			expectedErr: application.ErrNotEnoughBonuses,
+		},
+		"failed to withdraw user bonuses": {
+			params: &request.WithdrawBonuses{UserID: userID, OrderNumber: "4561261212345467", Sum: 20.0},
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
+				mock.On("WithdrawUserBonuses", ctx, &storage.WithdrawUserBonuses{
+					UserID:   userID,
+					OrderNum: "4561261212345467",
+					Sum:      2000,
+				}).Once().Return(nil, errors.New("storage error"))
+				return mock
+			}(),
+			expectedErr: fmt.Errorf("failed to withdraw user bonuses: %w", errors.New("storage error")),
+		},
+		"success": {
+			params: &request.WithdrawBonuses{UserID: userID, OrderNumber: "4561261212345467", Sum: 10.50},
+			storageMock: func() *mocks.Storage {
+				mock := mocks.NewStorage(t)
+
 				expectedStorageDTO := &storage.WithdrawUserBonuses{
 					UserID:   userID,
 					OrderNum: "4561261212345467",
@@ -725,25 +725,25 @@ func TestService_ListUserWithdrawals(t *testing.T) {
 			}(),
 			expectedErr: application.ErrNoData,
 		},
-		"success with withdrawals": { // Updated test name
+		"success with withdrawals": {
 			storageMock: func() *mocks.Storage {
 				mockStorage := mocks.NewStorage(t)
 				mockStorage.On("GetUserWithdrawals", ctx, userID).Once().Return([]*model.WithdrawalOrder{
-					{OrderNumber: "1234567890", Amount: 10000, CreatedAt: now},                // 100.00 in cents
-					{OrderNumber: "0987654321", Amount: 7890, CreatedAt: now.Add(-time.Hour)}, // 78.90 in cents
+					{OrderNumber: "1234567890", Amount: 10000, CreatedAt: now},
+					{OrderNumber: "0987654321", Amount: 7890, CreatedAt: now.Add(-time.Hour)},
 				}, nil)
 				return mockStorage
 			}(),
 			expectedResp: []*response.UserWithdrawal{
-				{OrderNumber: "1234567890", Sum: 100.00, ProcessedAt: now.Format(time.RFC3339)},                // Expected as float
-				{OrderNumber: "0987654321", Sum: 78.90, ProcessedAt: now.Add(-time.Hour).Format(time.RFC3339)}, // Expected as float
+				{OrderNumber: "1234567890", Sum: 100.00, ProcessedAt: now.Format(time.RFC3339)},
+				{OrderNumber: "0987654321", Sum: 78.90, ProcessedAt: now.Add(-time.Hour).Format(time.RFC3339)},
 			},
 		},
-		"success with specific withdrawal sum": { // New Test Case
+		"success with specific withdrawal sum": {
 			storageMock: func() *mocks.Storage {
 				mockStorage := mocks.NewStorage(t)
 				mockStorage.On("GetUserWithdrawals", ctx, userID).Once().Return([]*model.WithdrawalOrder{
-					{OrderNumber: "WITHDRAW_7890", Amount: 7890, CreatedAt: now}, // 78.90 in cents
+					{OrderNumber: "WITHDRAW_7890", Amount: 7890, CreatedAt: now},
 				}, nil)
 				return mockStorage
 			}(),
@@ -768,7 +768,7 @@ func TestService_ListUserWithdrawals(t *testing.T) {
 				for i, expectedWithdrawal := range tt.expectedResp {
 					actualWithdrawal := resp[i]
 					assert.Equal(t, expectedWithdrawal.OrderNumber, actualWithdrawal.OrderNumber)
-					assert.InDelta(t, expectedWithdrawal.Sum, actualWithdrawal.Sum, 0.001) // Use InDelta for float comparison
+					assert.InDelta(t, expectedWithdrawal.Sum, actualWithdrawal.Sum, 0.001)
 					assert.Equal(t, expectedWithdrawal.ProcessedAt, actualWithdrawal.ProcessedAt)
 				}
 			}

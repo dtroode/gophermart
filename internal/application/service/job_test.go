@@ -60,7 +60,7 @@ func TestService_checkOrderJob(t *testing.T) {
 				accrual.On("GetOrder", mock.Anything, orderNumber).Once().
 					Return(&model.AccrualOrder{
 						Status:  model.AccrualOrderStatusProcessed,
-						Accrual: 50, // This is int32 cents from accrual system
+						Accrual: 50,
 						Number:  orderNumber,
 					}, nil)
 				return accrual
@@ -70,19 +70,19 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 5000, // Expect float32 decimal
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50, // model.Order.Accrual is int32 cents
+					Accrual: 50,
 				}, nil)
 				return storageMock
 			}(),
 			expectedResp: &model.Order{
 				ID:      orderID,
 				Number:  orderNumber,
-				Accrual: 50, // model.Order.Accrual is int32 cents
+				Accrual: 50,
 				Status:  model.OrderStatusProcessed,
 			},
 		},
@@ -96,7 +96,7 @@ func TestService_checkOrderJob(t *testing.T) {
 					}, nil).Once()
 				accrual.On("GetOrder", mock.Anything, orderNumber).Return(&model.AccrualOrder{
 					Status:  model.AccrualOrderStatusProcessed,
-					Accrual: 50, // This is int32 cents from accrual system
+					Accrual: 50,
 					Number:  orderNumber,
 				}, nil).Once()
 				return accrual
@@ -114,19 +114,19 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 5000, // Expect float32 decimal
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50, // model.Order.Accrual is int32 cents
+					Accrual: 50,
 				}, nil)
 				return storageMock
 			}(),
 			expectedResp: &model.Order{
 				ID:      orderID,
 				Number:  orderNumber,
-				Accrual: 50, // model.Order.Accrual is int32 cents
+				Accrual: 50,
 				Status:  model.OrderStatusProcessed,
 			},
 		},
@@ -180,7 +180,7 @@ func TestService_checkOrderJob(t *testing.T) {
 					}, nil).Once()
 				accrual.On("GetOrder", mock.Anything, orderNumber).Return(&model.AccrualOrder{
 					Status:  model.AccrualOrderStatusProcessed,
-					Accrual: 50, // This is int32 cents from accrual system
+					Accrual: 50,
 					Number:  orderNumber,
 				}, nil).Once()
 				return accrual
@@ -190,19 +190,19 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 5000, // Expect float32 decimal
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50, // model.Order.Accrual is int32 cents
+					Accrual: 50,
 				}, nil)
 				return storageMock
 			}(),
 			expectedResp: &model.Order{
 				ID:      orderID,
 				Number:  orderNumber,
-				Accrual: 50, // model.Order.Accrual is int32 cents
+				Accrual: 50,
 				Status:  model.OrderStatusProcessed,
 			},
 		},
@@ -248,7 +248,7 @@ func TestService_checkOrderJob(t *testing.T) {
 					}, nil).Times(5)
 				accrual.On("GetOrder", mock.Anything, orderNumber).Return(&model.AccrualOrder{
 					Status:  model.AccrualOrderStatusProcessed,
-					Accrual: 50, // This is int32 cents from accrual system
+					Accrual: 50,
 					Number:  orderNumber,
 				}, nil).Once()
 				return accrual
@@ -266,19 +266,19 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 5000, // Expect float32 decimal
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50, // model.Order.Accrual is int32 cents
+					Accrual: 50,
 				}, nil)
 				return storageMock
 			}(),
 			expectedResp: &model.Order{
 				ID:      orderID,
 				Number:  orderNumber,
-				Accrual: 50, // model.Order.Accrual is int32 cents
+				Accrual: 50,
 				Status:  model.OrderStatusProcessed,
 			},
 		},
@@ -289,7 +289,7 @@ func TestService_checkOrderJob(t *testing.T) {
 					Return(nil, application.ErrAccrualTooManyRequests).Once()
 				accrual.On("GetOrder", mock.Anything, orderNumber).Return(&model.AccrualOrder{
 					Status:  model.AccrualOrderStatusProcessed,
-					Accrual: 50, // This is int32 cents from accrual system
+					Accrual: 50,
 					Number:  orderNumber,
 				}, nil).Once()
 				return accrual
@@ -299,30 +299,30 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 5000, // Expect float32 decimal
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50, // model.Order.Accrual is int32 cents
+					Accrual: 50,
 				}, nil)
 				return storageMock
 			}(),
 			expectedResp: &model.Order{
 				ID:      orderID,
 				Number:  orderNumber,
-				Accrual: 50, // model.Order.Accrual is int32 cents
+				Accrual: 50,
 				Status:  model.OrderStatusProcessed,
 			},
 		},
-		"err order not registerd and than processed": { // Typo in test name: "registerd"
+		"err order not registerd and than processed": {
 			accrualMock: func() *mocks.AccrualAdapter {
 				accrual := mocks.NewAccrualAdapter(t)
 				accrual.On("GetOrder", mock.Anything, orderNumber).
 					Return(nil, application.ErrAccrualOrderNotRegistered).Once()
 				accrual.On("GetOrder", mock.Anything, orderNumber).Return(&model.AccrualOrder{
 					Status:  model.AccrualOrderStatusProcessed,
-					Accrual: 50, // This is int32 cents from accrual system
+					Accrual: 50,
 					Number:  orderNumber,
 				}, nil).Once()
 				return accrual
@@ -332,19 +332,19 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 5000, // Expect float32 decimal
+					Accrual: 5000,
 				}).Once().Return(&model.Order{
 					ID:      orderID,
 					Number:  orderNumber,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 50, // model.Order.Accrual is int32 cents
+					Accrual: 50,
 				}, nil)
 				return storageMock
 			}(),
 			expectedResp: &model.Order{
 				ID:      orderID,
 				Number:  orderNumber,
-				Accrual: 50, // model.Order.Accrual is int32 cents
+				Accrual: 50,
 				Status:  model.OrderStatusProcessed,
 			},
 		},
@@ -372,7 +372,7 @@ func TestService_checkOrderJob(t *testing.T) {
 				accrual := mocks.NewAccrualAdapter(t)
 				accrual.On("GetOrder", mock.Anything, orderNumber).Return(&model.AccrualOrder{
 					Status:  model.AccrualOrderStatusProcessed,
-					Accrual: 50, // This is int32 cents from accrual system
+					Accrual: 50,
 					Number:  orderNumber,
 				}, nil).Once()
 				return accrual
@@ -382,7 +382,7 @@ func TestService_checkOrderJob(t *testing.T) {
 				storageMock.On("SetOrderStatusAndAccrual", mock.Anything, &storage.SetOrderStatusAndAccrual{
 					ID:      orderID,
 					Status:  model.OrderStatusProcessed,
-					Accrual: 5000, // Expect float32 decimal
+					Accrual: 5000,
 				}).Once().Return(nil, errors.New("storage error"))
 				return storageMock
 			}(),
