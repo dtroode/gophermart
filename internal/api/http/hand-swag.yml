@@ -1,0 +1,342 @@
+openapi: 3.0.0
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  description: description
+  version: 1.0.12
+servers:
+  - url: https://petstore3.swagger.io/api/
+tags:
+  - name: user
+    description: Operations about user
+paths:
+  /user/register:
+    post:
+      tags:
+        - user
+      summary: Register user
+      description: .
+      operationId: register
+      requestBody:
+        description: Login and password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginData'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            Authorization:
+              description: jwt token
+              schema:
+                type: string
+        '400':
+          description: wrong request
+        '409':
+          description: login is taken
+        '500':
+          description: internal server error
+  /user/login:
+    post:
+      tags:
+        - user
+      summary: Authenticate user
+      description: .
+      operationId: login
+      requestBody:
+        description: Login and password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginData'
+        required: true
+      responses:
+        '200':
+          description: пользователь успешно аутентифицирован
+          headers:
+            Authorization:
+              description: jwt token
+              schema:
+                type: string
+        '400':
+          description: неверный формат запроса
+        '401':
+          description: неверная пара логин/пароль
+        '500':
+          description: внутренняя ошибка сервера
+  /user/orders:
+    post:
+      tags:
+        - user
+      summary: Upload order number
+      description: .
+      operationId: uploadOrder
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Order number
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: 12345678903
+      responses:
+        '200':
+          description: already uploaded by same user
+        '202':
+          description: accepted
+        '400':
+          description: wrong format
+        '401':
+          description: user unauthorized
+        '409':
+          description: already uploaded by another user
+        '422':
+          description: wrong number format
+        '500':
+          description: internal server error
+    get:
+      tags:
+        - user
+      summary: Get user orders
+      description: .
+      operationId: listUserOrders
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserOrder'
+        '204':
+          descipriont: no data
+        '401':
+          description: user unauthorized
+        '500':
+          description: internal server error
+  /user/balance:
+    get:
+      tags:
+        - user
+      summary: Get user balance
+      description: .
+      operationId: getUserBalance
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBalance'
+        '401':
+          description: user unauthorized
+        '500':
+          description: internal server error
+  /user/balance/withdraw:
+    post:
+      tags:
+        - user
+      summary: Withdraw bonuses
+      description: Запрос на списание баллов с накопительного счёта в счёт оплаты нового заказа
+      operationId: withdrawUserBonuses
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Количество бонусов и номер заказа
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawBonuses'
+      responses:
+        '200':
+          description: успешная обработка запроса
+        '401':
+          description: пользователь не авторизован
+        '402':
+          description: на счету недостаточно средств
+        '422':
+          description: неверный номер заказа
+        '500':
+          description: внутренняя ошибка сервера
+  /user/withdrawals:
+    get:
+      tags:
+        - user
+      summary: Получение информации о выводе средств
+      description: .
+      operationId: listUserWithdrawals
+      parameters:
+        - name: api_key
+          in: header
+          description: ''
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: успешная обработка запроса
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Withdrawal'
+        '204':
+          description: нет ни одного списания
+        '401':
+          description: пользователь не авторизован
+        '500':
+          description: внутренняя ошибка сервера
+
+components:
+  schemas:
+    UserLoginData:
+      required:
+        - login
+        - password
+      type: object
+      properties:
+        login:
+          type: string
+          example: dtroode
+        password:
+          type: string
+          example: password
+    UserBalance:
+      type: object
+      properties:
+        current:
+          type: number
+          format: float
+          example: 500.5
+        withdrawn:
+          type: integer
+          format: int32
+          example: 50
+    UserOrder:
+      type: object
+      properties:
+        number:
+          type: string
+          example: 9278923470
+        status:
+          type: string
+          description: order status
+          example: PROCESSED
+          enum:
+            - NEW
+            - PROCESSING
+            - INVALID
+            - PROCESSED
+        accrual:
+          type: integer
+          format: int32
+          example: 500
+        uploaded_at:
+          type: string
+          format: RFC3339
+    WithdrawBonuses:
+      type: object
+      properties:
+        order:
+          type: string
+          example: 2377225624
+        sum:
+          type: integer
+          format: int32
+          example: 751
+    Withdrawal:
+      type: object
+      properties:
+        order:
+          type: string
+          example: 2377225624
+        sum:
+          type: integer
+          format: int32
+          example: 751
+        processed_at:
+          type: string
+          format: RFC3339
+    
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+  requestBodies:
+    UserLoginData:
+      description: login and password
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserLoginData'
+    UserRegistrationData:
+      description: login and password
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserLoginData'
+    WithdrawBonuses:
+      description: Количество бонусов и заказ, для которого списываем
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WithdrawBonuses'
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            "write:pets": modify pets in your account
+            "read:pets": read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
